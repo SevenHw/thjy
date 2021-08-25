@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="dubbo-domain" />
+        <module name="order-service" />
+        <module name="user-api" />
+        <module name="user-consumer" />
+        <module name="user-provider" />
+        <module name="user-server" />
+        <module name="user-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cloud-dubbo-demo" target="8" />
+      <module name="dubbo-demo" target="8" />
+      <module name="dubbo-domain" target="8" />
+      <module name="order-service" target="8" />
+      <module name="user-api" target="8" />
+      <module name="user-consumer" target="8" />
+      <module name="user-provider" target="8" />
+      <module name="user-server" target="8" />
+      <module name="user-service" target="8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dubbo-domain" options="-parameters" />
+      <module name="order-service" options="-parameters" />
+      <module name="user-api" options="-parameters" />
+      <module name="user-consumer" options="-parameters" />
+      <module name="user-provider" options="-parameters" />
+      <module name="user-server" options="-parameters" />
+      <module name="user-service" options="-parameters" />
+    </option>
+  </component>
+</project>
