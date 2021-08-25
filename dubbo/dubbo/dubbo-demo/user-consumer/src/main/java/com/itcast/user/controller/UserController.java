@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    @DubboReference
+    @DubboReference(version = "2.0.0", loadbalance = "roundrobin")
     private UserService userService;
 
     /**
