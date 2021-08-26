@@ -2,10 +2,12 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="dubbo-api" />
         <module name="dubbo-domain" />
         <module name="order-service" />
         <module name="user-api" />
@@ -16,9 +18,13 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="cloud-dubbo" target="8" />
       <module name="cloud-dubbo-demo" target="8" />
+      <module name="dubbo-api" target="8" />
+      <module name="dubbo-consumer" target="1.5" />
       <module name="dubbo-demo" target="8" />
       <module name="dubbo-domain" target="8" />
+      <module name="dubbo-provider" target="1.5" />
       <module name="order-service" target="8" />
       <module name="user-api" target="8" />
       <module name="user-consumer" target="8" />
@@ -29,6 +35,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dubbo-api" options="-parameters" />
       <module name="dubbo-domain" options="-parameters" />
       <module name="order-service" options="-parameters" />
       <module name="user-api" options="-parameters" />
