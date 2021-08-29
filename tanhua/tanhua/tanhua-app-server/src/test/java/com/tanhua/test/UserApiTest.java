@@ -9,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.xml.ws.RequestWrapper;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppServerApplication.class)
 public class UserApiTest {

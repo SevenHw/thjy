@@ -1,11 +1,30 @@
 package com.tanhua.test;
 
 import com.baidu.aip.face.AipFace;
+import com.tanhua.AppServerApplication;
+import com.tanhua.autoconfig.template.AipFaceTemplate;
 import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = AppServerApplication.class)
 public class faceTest {
+
+    @Autowired
+    private AipFaceTemplate aipFaceTemplate;
+
+    @Test
+    public void detectTest() {
+        boolean detece = aipFaceTemplate.detece("https://sevenlikey.oss-cn-shenzhen.aliyuncs.com/2021/08/28/69ac4065-87b6-4388-9833-9e20a1e5671d.jpg");
+        System.out.println(detece);
+    }
+
     //设置APPID/AK/SK
     public static final String APP_ID = "24765404";
     public static final String API_KEY = "h5edOsG9ELa6GU2O0eYdHWaE";

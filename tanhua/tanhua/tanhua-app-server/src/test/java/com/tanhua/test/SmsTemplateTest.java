@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppServerApplication.class)
 public class SmsTemplateTest {
-
+    //15120166172
     //注入
     @Autowired
     private SmsTemplate smsTemplate;
@@ -19,6 +19,6 @@ public class SmsTemplateTest {
     //测试
     @Test
     public void testSendSms() {
-        smsTemplate.sendSms("17775627403", "4567");
+        smsTemplate.sendSms("15575909044", "666666");
     }
 }
