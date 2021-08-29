@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cloud-dubbo-demo/cloud-dubbo-demo.iml" filepath="$PROJECT_DIR$/cloud-dubbo-demo/cloud-dubbo-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cloud-dubbo-demo/dubbo-api/dubbo-api.iml" filepath="$PROJECT_DIR$/cloud-dubbo-demo/dubbo-api/dubbo-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dubbo-demo/dubbo-demo.iml" filepath="$PROJECT_DIR$/dubbo-demo/dubbo-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cloud-dubbo-demo/dubbo-domain/dubbo-domain.iml" filepath="$PROJECT_DIR$/cloud-dubbo-demo/dubbo-domain/dubbo-domain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cloud-dubbo-demo/order-service/order-service.iml" filepath="$PROJECT_DIR$/cloud-dubbo-demo/order-service/order-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dubbo-demo/user-api/user-api.iml" filepath="$PROJECT_DIR$/dubbo-demo/user-api/user-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dubbo-demo/user-consumer/user-consumer.iml" filepath="$PROJECT_DIR$/dubbo-demo/user-consumer/user-consumer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dubbo-demo/user-provider/user-provider.iml" filepath="$PROJECT_DIR$/dubbo-demo/user-provider/user-provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dubbo-demo/user-server/user-server.iml" filepath="$PROJECT_DIR$/dubbo-demo/user-server/user-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cloud-dubbo-demo/user-service/user-service.iml" filepath="$PROJECT_DIR$/cloud-dubbo-demo/user-service/user-service.iml" />
+    </modules>
+  </component>
+</project>

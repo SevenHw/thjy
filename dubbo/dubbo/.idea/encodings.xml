@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" addBOMForNewFiles="with NO BOM">
+    <file url="file://$PROJECT_DIR$/cloud-dubbo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo-demo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo-demo/dubbo-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo-demo/dubbo-domain" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo-demo/order-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo-demo/user-service" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo/dubbo-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo/dubbo-consumer" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/cloud-dubbo/dubbo-provider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubbo-demo" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubbo-demo/user-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubbo-demo/user-consumer" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubbo-demo/user-provider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dubbo-demo/user-server" charset="UTF-8" />
+  </component>
+</project>

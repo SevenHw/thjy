@@ -1,0 +1,17 @@
+server:
+  port: 18080
+spring:
+  application:
+    name: api-consumer
+logging:
+  level:
+    cn.itcast: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+dubbo:
+  registry:
+    address: nacos://127.0.0.1:8848
+  consumer:
+    timeout: 3000   # 超时时间
+    retries: 0
+    check: false  # 关闭启动是检查提供者是否可用

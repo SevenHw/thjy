@@ -1,0 +1,23 @@
+server:
+  port: 8082
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/dubbo-demo?useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  application:
+    name: order-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+#配置dubbo，注册中心，暴露的端口和协议，dubbo注解的包扫描
+dubbo:
+  protocol:
+    name: dubbo
+    port: 20880
+  registry:
+    address: spring-cloud://localhost   #使用SpringCloud中的注册中心
+  scan:
+    base-packages: cn.itcast.order.service  #dubbo中包扫描
