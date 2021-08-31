@@ -18,7 +18,10 @@ public class SmsTemplateTest {
 
     //测试
     @Test
-    public void testSendSms() {
-        smsTemplate.sendSms("15575909044", "666666");
+    public void testSendSms() throws InterruptedException {
+        for (int i = 0; i < 5; i++) {
+            smsTemplate.sendSms("18975973962", "666666");
+            Thread.sleep(1000);
+        }
     }
 }
