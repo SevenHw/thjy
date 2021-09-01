@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tanhua.dubbo.api.BlackListApi;
 import com.tanhua.dubbo.api.QuestionApi;
 import com.tanhua.dubbo.api.SettingsApi;
+import com.tanhua.dubbo.api.UserApi;
 import com.tanhua.model.domian.Question;
 import com.tanhua.model.domian.Settings;
+import com.tanhua.model.domian.User;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.SettingsVo;
@@ -27,6 +29,9 @@ public class SettingsService {
     @DubboReference
     private BlackListApi blackListApi;
 
+    @DubboReference
+    private UserApi userApi;
+
     /**
      * 查询通用设置
      *
@@ -37,8 +42,11 @@ public class SettingsService {
         //1、获取用户id
         Long userId = UserHolder.getUserId();
         vo.setId(userId);
+        //获取用户手机号码
+        User user = userApi.findById(userId);
+        String mobile = user.getMobile();
         //2、获取用户的手机号码
-        vo.setPhone(UserHolder.getMobile());
+        vo.setPhone(mobile);
         //3、获取用户的陌生人问题
         Question question = questionApi.findByUserId(userId);
         String txt = question == null ? "你喜欢java吗？" : question.getTxt();

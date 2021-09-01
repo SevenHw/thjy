@@ -6,6 +6,7 @@ import com.tanhua.commons.utils.JwtUtils;
 import com.tanhua.dubbo.api.UserApi;
 import com.tanhua.model.domian.User;
 import com.tanhua.model.vo.ErrorResult;
+import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -83,5 +84,35 @@ public class UserService {
         retMap.put("token", token);
         retMap.put("isNew", isNew);
         return retMap;
+    }
+
+    /**
+     * 修改手机号码验证码校验
+     */
+    public Map checkVerificationCode(String phone, String code) {
+        //1.从redis中获取下发的验证码
+        String redisCode = redisTemplate.opsForValue().get(check + phone);
+        Boolean isNew = true;
+        //2.对验证码进行校验(验证码是否存在,是否和输入的验证码一致)
+        if (StringUtils.isEmpty(redisCode) || !redisCode.equals(code)) {
+            isNew = false;
+        }
+        //3.删除redis中的验证码
+        redisTemplate.delete(check);
+        HashMap<String, Boolean> map = new HashMap<>();
+        map.put("verification", isNew);
+        return map;
+    }
+
+    /**
+     * 修改手机号码
+     *
+     * @param phone
+     */
+    public void updatePhone(String phone) {
+        //获取当前用户id
+        Long userId = UserHolder.getUserId();
+        //调用userApi修改手机号码
+        userApi.update(phone, userId);
     }
 }
