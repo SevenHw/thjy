@@ -39,7 +39,6 @@ public class UsersController {
 
     /**
      * 跟新用户资料
-     *
      * @param userInfo
      * @return
      */
