@@ -43,7 +43,7 @@ public class UserInfoApiImpl implements UserInfoApi {
             if (info.getAge() != null) {
                 qw.lt("age", info.getAge());
             }
-            if (!StringUtils.isEmpty(info.getGender())) {
+            if (!(StringUtils.isEmpty(info.getGender()))) {
                 qw.eq("gender", info.getGender());
             }
         }

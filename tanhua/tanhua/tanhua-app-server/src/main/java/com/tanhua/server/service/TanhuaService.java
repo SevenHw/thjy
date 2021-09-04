@@ -100,7 +100,7 @@ public class TanhuaService {
         UserInfo userInfo = new UserInfo();
         userInfo.setAge(dto.getAge());
         userInfo.setGender(dto.getGender());
-        //6.构建查询条件,鼻梁查询虽有用户详情
+        //6.构建查询条件,查询虽有用户详情
         Map<Long, UserInfo> map = userInfoApi.findByIds(ids, userInfo);
         //7.循环推荐的数据列表,构建vo对象
         ArrayList<TodayBest> list = new ArrayList<>();
