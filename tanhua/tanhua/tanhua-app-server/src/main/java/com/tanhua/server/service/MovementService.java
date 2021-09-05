@@ -2,7 +2,6 @@ package com.tanhua.server.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import com.tanhua.autoconfig.template.OssTemplate;
 import com.tanhua.commons.utils.Constants;
 import com.tanhua.dubbo.api.MovementApi;
@@ -14,7 +13,6 @@ import com.tanhua.model.vo.MovementsVo;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,4 +186,6 @@ public class MovementService {
         }
 
     }
+
+
 }

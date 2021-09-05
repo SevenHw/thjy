@@ -46,7 +46,7 @@ public class UserinfoServive {
         } else {
             //2.2包含人脸,调用API更新
             UserInfo userInfo = new UserInfo();
-            userInfo.setId(Long.valueOf(id));
+            userInfo.setId(id);
             userInfo.setAvatar(imageUrl);
             userInfoApi.update(userInfo);
         }

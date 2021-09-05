@@ -36,7 +36,7 @@ public class TanhuaService {
         RecommendUser recommendUser = recommendUserApi.queryWithMaxScore(userId);
         if (recommendUser == null) {
             recommendUser = new RecommendUser();
-            recommendUser.setUserId(1l);
+            recommendUser.setUserId(1L);
             recommendUser.setScore(99d);
         }
         //将RecommendUser转化为TodayBest
@@ -92,7 +92,7 @@ public class TanhuaService {
         //3.获取分页中的RecommendUser数据列表
         List<RecommendUser> items = (List<RecommendUser>) pr.getItems();
         //4.判断列表是否为空
-        if (items == null) {
+        if (CollUtil.isEmpty(items)) {
             return pr;
         }
         //5.提取所有的推荐的用户id列表

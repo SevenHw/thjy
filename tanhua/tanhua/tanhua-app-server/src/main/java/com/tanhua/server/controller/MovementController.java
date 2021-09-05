@@ -3,6 +3,7 @@ package com.tanhua.server.controller;
 import com.tanhua.model.mongo.Movement;
 import com.tanhua.model.vo.MovementsVo;
 import com.tanhua.model.vo.PageResult;
+import com.tanhua.server.service.CommentsService;
 import com.tanhua.server.service.MovementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,15 @@ public class MovementController {
     @Autowired
     private MovementService movementService;
 
+    @Autowired
+    private CommentsService commentsService;
+
     /**
      * 发布动态
      */
     @PostMapping
     public ResponseEntity movements(Movement movement,
-                                    MultipartFile imageContent[]) throws IOException {
+                                    MultipartFile[] imageContent) throws IOException {
         movementService.publishMovement(movement, imageContent);
         return ResponseEntity.ok(null);
     }
@@ -76,5 +80,57 @@ public class MovementController {
     public ResponseEntity findById(@PathVariable("id") String movementId) {
         MovementsVo vo = movementService.findById(movementId);
         return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 动态点赞
+     * /movements/:id/like
+     *
+     * @param movementId
+     * @return
+     */
+    @GetMapping("/{id}/like")
+    public ResponseEntity like(@PathVariable("id") String movementId) {
+        Integer pr = commentsService.like(movementId);
+        return ResponseEntity.ok(pr);
+    }
+
+    /**
+     * 取消点赞
+     * /movements/:id/dislike
+     *
+     * @param movementId
+     * @return
+     */
+    @GetMapping("/{id}/dislike")
+    public ResponseEntity dislike(@PathVariable("id") String movementId) {
+        Integer pr = commentsService.dislike(movementId);
+        return ResponseEntity.ok(pr);
+    }
+
+    /**
+     * 喜欢
+     * /movements/:id/love
+     *
+     * @param movementId
+     * @return
+     */
+    @GetMapping("/{id}/love")
+    public ResponseEntity love(@PathVariable("id") String movementId) {
+        Integer pr = commentsService.love(movementId);
+        return ResponseEntity.ok(pr);
+    }
+
+    /**
+     * 取消喜欢
+     * /movements/:id/unlove
+     *
+     * @param movementId
+     * @return
+     */
+    @GetMapping("/{id}/unlove")
+    public ResponseEntity unlove(@PathVariable("id") String movementId) {
+        Integer pr = commentsService.unlove(movementId);
+        return ResponseEntity.ok(pr);
     }
 }

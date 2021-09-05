@@ -21,6 +21,9 @@ public class Constants {
     //动态喜欢用户HashKey
     public static final String MOVEMENT_LOVE_HASHKEY = "MOVEMENT_LOVE_";
 
+    //动态喜欢用户HashKey
+    public static final String MOVEMENT_COMMENT_HASHKEY = "MOVEMENT_COMMENT_";
+
     //视频点赞用户HashKey
     public static final String VIDEO_LIKE_HASHKEY = "VIDEO_LIKE";
 

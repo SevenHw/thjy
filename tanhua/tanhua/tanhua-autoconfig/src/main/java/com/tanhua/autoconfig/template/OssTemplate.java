@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class OssTemplate {
-    private OssProperties properties;
+    private final OssProperties properties;
 
     public OssTemplate(OssProperties properties) {
         this.properties = properties;
@@ -25,7 +25,7 @@ public class OssTemplate {
 
         //3.拼写图片路劲
         filename = new SimpleDateFormat("yyyy/MM/dd").format(new Date())
-                + "/" + UUID.randomUUID().toString() + filename.substring(filename.lastIndexOf("."));
+                + "/" + UUID.randomUUID() + filename.substring(filename.lastIndexOf("."));
         // yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
         //String endpoint = "oss-cn-shenzhen.aliyuncs.com";
         String endpoint = properties.getEndpoint();

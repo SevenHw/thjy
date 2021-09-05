@@ -1,9 +1,5 @@
 package com.tanhua.autoconfig.template;
 
-import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
-import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
-import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
-import com.aliyun.teaopenapi.models.Config;
 import com.tanhua.autoconfig.properties.SmsProperties;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -14,12 +10,9 @@ import org.dom4j.Element;
 
 public class SmsTemplate {
 
-    private SmsProperties properties;
-
-    private static String Url = "http://106.ihuyi.com/webservice/sms.php?method=Submit";
+    private static final String Url = "http://106.ihuyi.com/webservice/sms.php?method=Submit";
 
     public SmsTemplate(SmsProperties properties) {
-        this.properties = properties;
     }
 
     public void sendSms(String mobile, String code) {

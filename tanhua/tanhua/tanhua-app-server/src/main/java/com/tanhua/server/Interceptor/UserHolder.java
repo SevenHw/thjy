@@ -6,7 +6,7 @@ import com.tanhua.model.domian.User;
  * 工具类:实现向threadlocal存储数据方法
  */
 public class UserHolder {
-    private static ThreadLocal<User> tl = new ThreadLocal<>();
+    private static final ThreadLocal<User> tl = new ThreadLocal<>();
 
     //将用户对象,存进Threadlocal
     public static void set(User user) {

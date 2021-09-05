@@ -62,7 +62,7 @@ public class UserService {
         }
         //3.删除redis中的验证码
         redisTemplate.delete(check);
-        Boolean isNew = false;
+        boolean isNew = false;
         //4.通过手机号码查询用户
         User user = userApi.findByMobile(phone);
         //5.如果用户不存在,创建用户保存到数据库中
@@ -92,11 +92,8 @@ public class UserService {
     public Map checkVerificationCode(String phone, String code) {
         //1.从redis中获取下发的验证码
         String redisCode = redisTemplate.opsForValue().get(check + phone);
-        Boolean isNew = true;
+        boolean isNew = !StringUtils.isEmpty(redisCode) && redisCode.equals(code);
         //2.对验证码进行校验(验证码是否存在,是否和输入的验证码一致)
-        if (StringUtils.isEmpty(redisCode) || !redisCode.equals(code)) {
-            isNew = false;
-        }
         //3.删除redis中的验证码
         redisTemplate.delete(check);
         HashMap<String, Boolean> map = new HashMap<>();

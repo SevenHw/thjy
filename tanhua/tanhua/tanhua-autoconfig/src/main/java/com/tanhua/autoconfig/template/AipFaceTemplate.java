@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class AipFaceTemplate {
 
     @Autowired
-    private AipFace client;
+    private AipFace aipFace;
 
     /**
      * 检测图片中是否包含人脸
@@ -32,14 +32,9 @@ public class AipFaceTemplate {
 
 
         // 人脸检测
-        JSONObject res = client.detect(imageUrl, imageType, options);
+        JSONObject res = aipFace.detect(imageUrl, imageType, options);
         System.out.println(res.toString(2));
         Integer error_code = (Integer) res.get("error_code");
-        /**
-         * error_code如果为0则返回true   否则返回false
-         *  true   代表识别到人脸
-         *  false  代表没有识别到人脸
-         */
-        return error_code == 0 ? true : false;
+        return error_code == 0;
     }
 }

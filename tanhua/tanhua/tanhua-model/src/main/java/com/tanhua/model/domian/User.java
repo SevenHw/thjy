@@ -2,8 +2,10 @@ package com.tanhua.model.domian;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor  //满参构造
 @NoArgsConstructor  //无参构造
