@@ -7,13 +7,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="tanhua-app-server" />
         <module name="tanhua-autoconfig" />
+        <module name="tanhua-dubbo-interface" />
         <module name="tanhua-commons" />
         <module name="tanhua-dubbo-db" />
-        <module name="tanhua-dubbo-interface" />
         <module name="tanhua-dubbo-mongo" />
         <module name="tanhua-model" />
+        <module name="tanhua-app-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -34,6 +34,7 @@
       <module name="tanhua-app-server" options="-parameters" />
       <module name="tanhua-autoconfig" options="-parameters" />
       <module name="tanhua-commons" options="-parameters" />
+      <module name="tanhua-dubbo" options="-parameters" />
       <module name="tanhua-dubbo-db" options="-parameters" />
       <module name="tanhua-dubbo-interface" options="-parameters" />
       <module name="tanhua-dubbo-mongo" options="-parameters" />

@@ -35,32 +35,55 @@ public class CommentAPIImpl implements CommentApi {
      */
     @Override
     public Integer save(Comment comment) {
-        //1、查询动态
-        Movement movement = mongoTemplate.findById(comment.getPublishId(), Movement.class);
-        //2、向comment对象设置被评论人属性
-        if (ObjectUtil.isNull(movement)) {
-            comment.setPublishUserId(movement.getUserId());
-        }
-        //3、保存到数据库
-        mongoTemplate.save(comment);
-        //4、更新动态表中的对应字段
-        Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
-        Update update = new Update();
-        if (comment.getCommentType() == CommentType.LIKE.getType()) {
-            update.inc("likeCount", 1);
-        } else if (comment.getCommentType() == CommentType.COMMENT.getType()) {
-            update.inc("commentCount", 1);
-        } else if (comment.getCommentType() == CommentType.COMMENTLIKE.getType()) {
-            update.inc("commentlike", 1);
+        if (comment.getCommentType() != CommentType.COMMENTLIKE.getType()) {
+            //1、查询动态
+            Movement movement = mongoTemplate.findById(comment.getPublishId(), Movement.class);
+            //2、向comment对象设置被评论人属性
+            if (ObjectUtil.isNull(movement)) {
+                comment.setPublishUserId(movement.getUserId());
+            }
+            //3、保存到数据库
+            mongoTemplate.save(comment);
+            //4、更新动态表中的对应字段
+            Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+            Update update = new Update();
+            if (comment.getCommentType() == CommentType.LIKE.getType()) {
+                update.inc("likeCount", 1);
+            } else if (comment.getCommentType() == CommentType.COMMENT.getType()) {
+                update.inc("commentCount", 1);
+            } else {
+                update.inc("loveCount", 1);
+            }
+            //设置更新参数
+            FindAndModifyOptions options = new FindAndModifyOptions();
+            //获取更新后的最新数据
+            options.returnNew(true);
+            Movement modify = mongoTemplate.findAndModify(query, update, options, Movement.class);
+            //5、获取最新的评论数量，并返回
+            return modify.statisCount(comment.getCommentType());
         } else {
-            update.inc("loveCount", 1);
+            //查询评论发布人id
+            //Criteria criteria = Criteria.where("id").is(comment.getPublishId());
+            //Query query1 = Query.query(criteria);
+            Comment commentById = mongoTemplate.findById(comment.getPublishId(), Comment.class);
+            //评论发布人的id
+            Long userId = commentById.getUserId();
+            comment.setPublishUserId(userId);
+            //3、保存到数据库
+            mongoTemplate.save(comment);
+            //更新表中数据
+            Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+            Update update = new Update();
+            update.inc("likeCount", 1);
+            //设置更新参数
+            FindAndModifyOptions options = new FindAndModifyOptions();
+            //获取更新后的最新数据
+            options.returnNew(true);
+            Comment modify = mongoTemplate.findAndModify(query, update, options, Comment.class);
+            //5、获取最新的评论数量，并返回
+            return modify.statisCount();
         }
-        //设置更新参数
-        FindAndModifyOptions options = new FindAndModifyOptions();
-        options.returnNew(true);//获取更新后的最新数据
-        Movement modify = mongoTemplate.findAndModify(query, update, options, Movement.class);
-        //5、获取最新的评论数量，并返回
-        return modify.statisCount(comment.getCommentType());
+
     }
 
     /**
@@ -131,8 +154,6 @@ public class CommentAPIImpl implements CommentApi {
             update.inc("likeCount", -1);
         } else if (comment.getCommentType() == CommentType.COMMENT.getType()) {
             update.inc("commentCount", -1);
-        } else if (comment.getCommentType() == CommentType.COMMENTLIKE.getType()) {
-            update.inc("commentlike", -1);
         } else {
             update.inc("loveCount", -1);
         }
@@ -142,5 +163,36 @@ public class CommentAPIImpl implements CommentApi {
         Movement modify = mongoTemplate.findAndModify(movementQuery, update, options, Movement.class);
         //5、获取最新的评论数量，并返回
         return modify.statisCount(comment.getCommentType());
+
+
     }
+
+    /**
+     * 取消评论点赞
+     *
+     * @param movementId
+     * @param userId
+     * @return
+     */
+    @Override
+    public Integer find(String movementId, Long userId) {
+        //删除点赞数据
+        Criteria criteria = Criteria.where("userId").is(userId)
+                .and("publishId").is(new ObjectId(movementId))
+                .and("commentType").is(CommentType.COMMENTLIKE.getType());
+        Query queryDelete = Query.query(criteria);
+        mongoTemplate.remove(queryDelete, Comment.class);
+        //修改表
+        Query query = Query.query(Criteria.where("id").is(movementId));
+        Update update = new Update();
+        update.inc("likeCount", -1);
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.returnNew(true);//获取更新后的最新数据
+        Comment modify = mongoTemplate.findAndModify(query, update, options, Comment.class);
+        //5、获取最新的评论数量，并返回
+        return modify.statisCount();
+    }
+
+
 }

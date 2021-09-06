@@ -152,19 +152,6 @@ public class CommentsService {
     }
 
     /**
-     * 评论点赞
-     *
-     * @param movementId
-     * @return
-     */
-    public Integer commentLike(String movementId) {
-        CommentType like = CommentType.COMMENTLIKE;
-        String hashkey = Constants.MOVEMENT_COMMENT_HASHKEY;
-        Integer count = period(movementId, like, hashkey);
-        return count;
-    }
-
-    /**
      * 评论取消点赞
      *
      * @param movementId
@@ -173,9 +160,51 @@ public class CommentsService {
     public Integer commentDislike(String movementId) {
         CommentType like = CommentType.COMMENTLIKE;
         String hashkey = Constants.MOVEMENT_COMMENT_HASHKEY;
-        Integer count = period(movementId, like, hashkey);
+        //查看是否点赞
+        Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
+        //为点赞,抛出异常
+        if (!hasComment) {
+            throw new BusinessException(ErrorResult.disLikeError());
+        }
+        //通过评论id查出动态id
+        Long userId = UserHolder.getUserId();
+        Integer count = commentApi.find(movementId, userId);
+        //4、拼接redis的key，将用户的点赞状态存入redis
+        String key = Constants.MOVEMENTS_INTERACT_KEY + movementId;
+        String hashKey = hashkey + UserHolder.getUserId();
+        redisTemplate.opsForHash().delete(key, hashKey, "1");
         return count;
     }
+
+    /**
+     * 评论点赞
+     *
+     * @param movementId
+     * @return
+     */
+    public Integer commentLike(String movementId) {
+        CommentType like = CommentType.COMMENTLIKE;
+        String hashkey = Constants.MOVEMENT_COMMENT_HASHKEY;
+        //查看是否点赞
+        Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
+        //如果已经点赞喜欢,抛出异常
+        if (hasComment) {
+            throw new BusinessException(ErrorResult.likeError());
+        }
+        //通过评论id查出动态id
+        Comment comment = new Comment();
+        comment.setPublishId(new ObjectId(movementId));
+        comment.setCommentType(like.getType());
+        comment.setUserId(UserHolder.getUserId());
+        comment.setCreated(System.currentTimeMillis());
+        Integer count = commentApi.save(comment);
+        //4、拼接redis的key，将用户的点赞状态存入redis
+        String key = Constants.MOVEMENTS_INTERACT_KEY + movementId;
+        String hashKey = hashkey + UserHolder.getUserId();
+        redisTemplate.opsForHash().put(key, hashKey, "1");
+        return count;
+    }
+
 
     /**
      * 已经点赞喜欢
@@ -189,7 +218,7 @@ public class CommentsService {
         Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
         //如果已经点赞喜欢,抛出异常
         if (hasComment) {
-            throw new BusinessException(ErrorResult.loginError());
+            throw new BusinessException(ErrorResult.loveError());
         }
         //调用api保存数据到mongodb
         Comment comment = new Comment();
@@ -217,10 +246,11 @@ public class CommentsService {
         Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
         //2、如果未点赞，抛出异常
         if (!hasComment) {
-            throw new BusinessException(ErrorResult.disLikeError());
+            throw new BusinessException(ErrorResult.disloveError());
         }
         //3、调用API，删除数据，返回点赞数量
         Comment comment = new Comment();
+        comment.setPublishId(new ObjectId(movementId));
         comment.setPublishId(new ObjectId(movementId));
         comment.setCommentType(like.getType());
         comment.setUserId(UserHolder.getUserId());

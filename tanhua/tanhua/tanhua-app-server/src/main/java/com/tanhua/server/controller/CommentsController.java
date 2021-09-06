@@ -63,7 +63,7 @@ public class CommentsController {
      * 评论点赞
      * /comments/:id/dislike
      */
-    @GetMapping("/{id}/like")
+    @GetMapping("/{id}/dislike")
     public ResponseEntity commentDislike(@PathVariable("id") String movementId) {
         Integer pr = commentsService.commentDislike(movementId);
         return ResponseEntity.ok(pr);

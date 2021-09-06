@@ -26,6 +26,7 @@ public class UserService {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
     @DubboReference
     private UserApi userApi;
 
