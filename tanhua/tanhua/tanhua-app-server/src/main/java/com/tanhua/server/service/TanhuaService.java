@@ -1,8 +1,14 @@
 package com.tanhua.server.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson.JSON;
+import com.tanhua.autoconfig.template.HuanXinTemplate;
+import com.tanhua.commons.utils.Constants;
+import com.tanhua.dubbo.api.QuestionApi;
 import com.tanhua.dubbo.api.RecommendUserApi;
 import com.tanhua.dubbo.api.UserInfoApi;
+import com.tanhua.model.domian.Question;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.dto.RecommendUserDto;
 import com.tanhua.model.mongo.RecommendUser;
@@ -10,9 +16,11 @@ import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.TodayBest;
 import com.tanhua.server.Interceptor.UserHolder;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +31,12 @@ public class TanhuaService {
 
     @DubboReference
     private UserInfoApi userInfoApi;
+
+    @DubboReference
+    private QuestionApi questionApi;
+
+    @Autowired
+    private HuanXinTemplate huanXinTemplate;
 
     /**
      * 今日佳人
@@ -45,41 +59,10 @@ public class TanhuaService {
         return vo;
     }
 
-   /* public PageResult recommendation(RecommendUserDto dto) {
-        //1.获取用户id
-        Long userId = UserHolder.getUserId();
-        //2.调用recommendUserApi分页查询数据列表
-        PageResult pr = recommendUserApi.queryRecommendUserList(dto.getPage(), dto.getPagesize(), userId);
-        //3.获取分页中的RecommendUser数据列表
-        List<RecommendUser> items = (List<RecommendUser>) pr.getItems();
-        //4.判断列表是否为空
-        if (items == null) {
-            return pr;
-        }
-        //5.循环RecommendUser数据列表,根据推荐的用户id查询用户详情
-        ArrayList<TodayBest> list = new ArrayList<>();
-        for (RecommendUser item : items) {
-            Long recommendUserId = item.getUserId();
-            UserInfo userInfo = userInfoApi.findById(recommendUserId);
-            if (userInfo != null) {
-                //条件判断
-                if (!StringUtils.isEmpty(dto.getGender()) && !dto.getGender().equals(userInfo.getGender())) {
-                    continue;
-                }
-                if (dto.getAge() != null && dto.getAge() < userInfo.getAge()) {
-                    continue;
-                }
-                TodayBest vo = TodayBest.init(userInfo, item);
-                list.add(vo);
-            }
-        }
-        //6.构造返回值
-        pr.setItems(list);
-        return pr;
-    }*/
-
     /**
      * 分页查询推荐列表
+     * <p>
+     * CollUtil.isEmpty()判断集合是否为空    当集合长度为0是返回true
      *
      * @param dto
      * @return
@@ -92,7 +75,7 @@ public class TanhuaService {
         //3.获取分页中的RecommendUser数据列表
         List<RecommendUser> items = (List<RecommendUser>) pr.getItems();
         //4.判断列表是否为空
-        if (CollUtil.isEmpty(items)) {
+        if (ObjectUtil.isEmpty(items)) {
             return pr;
         }
         //5.提取所有的推荐的用户id列表
@@ -114,5 +97,57 @@ public class TanhuaService {
         //8.构造返回值
         pr.setItems(list);
         return pr;
+    }
+
+    /**
+     * 查询佳人信息
+     *
+     * @param userId
+     * @return
+     */
+    public TodayBest personalInfo(Long userId) {
+        //根据用户id查询用户详情
+        UserInfo userInfo = userInfoApi.findById(userId);
+        //根据操作人id和查看的用户id,查询两者的推荐数据
+        RecommendUser user = recommendUserApi.queryByUserId(userId, UserHolder.getUserId());
+        //构造返回值
+        return TodayBest.init(userInfo, user);
+    }
+
+    /**
+     * 查看陌生人问题
+     *
+     * @param userId
+     * @return
+     */
+    public String strangerQuestions(Long userId) {
+        //调用api查询出对象
+        Question question = questionApi.findByUserId(userId);
+        //构造返回值
+        if (ObjectUtil.isEmpty(question)) {
+            return "螃蟹在剥我的壳";
+        }
+        return question.getTxt();
+    }
+
+    /**
+     * 回复陌生人问题
+     *
+     * @param userId 用户id
+     * @param reply  回复内容
+     */
+    public void strangerQues(Long userId, String reply) {
+        //调用api查询接受消息的id
+        UserInfo userInfo = userInfoApi.findById(UserHolder.getUserId());
+        //构建回复消息
+        Map map = new HashMap<>();
+        map.put("userId", UserHolder.getUserId());
+        map.put("huanXinId", Constants.HX_USER_PREFIX + UserHolder.getUserId());
+        map.put("nickname", userInfo.getNickname());
+        map.put("strangerQuestion", strangerQuestions(userId));
+        map.put("reply", reply);
+        String jsonString = JSON.toJSONString(map);
+        //发送消息
+        huanXinTemplate.sendMsg(Constants.HX_USER_PREFIX + userId, jsonString);
     }
 }

@@ -60,7 +60,7 @@ public class CommentsController {
     }
 
     /**
-     * 评论点赞
+     * 评论取消点赞
      * /comments/:id/dislike
      */
     @GetMapping("/{id}/dislike")

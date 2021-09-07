@@ -18,7 +18,6 @@ public class UserApiImpl implements UserApi {
         //创建Wrapper对象
         QueryWrapper<User> qw = new QueryWrapper<>();
         //给Wrapper写入查询条件
-
         qw.eq("mobile", mobile);
         //讲查询结果返回
         return userMapper.selectOne(qw);
@@ -37,7 +36,7 @@ public class UserApiImpl implements UserApi {
     }
 
     /**
-     * 修改
+     * 修改手机号码
      *
      * @param phone
      * @param userId
@@ -59,6 +58,41 @@ public class UserApiImpl implements UserApi {
     @Override
     public User findById(Long userId) {
         return userMapper.selectById(userId);
+    }
+
+    /**
+     * 更新
+     *
+     * @param user
+     */
+    @Override
+    public void hxUpdate(User user) {
+        userMapper.updateById(user);
+    }
+
+    /**
+     * 通过手机号码查询
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public User findHx(Long userId) {
+        User user = userMapper.selectById(userId);
+        return user;
+    }
+
+    /**
+     * 根据用户id查询用户
+     *
+     * @param huanxinId
+     * @return
+     */
+    @Override
+    public User findByHxId(String huanxinId) {
+        QueryWrapper<User> qw = new QueryWrapper<>();
+        qw.eq("hx_user", huanxinId);
+        return userMapper.selectOne(qw);
     }
 
 

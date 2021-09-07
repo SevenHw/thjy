@@ -1,5 +1,6 @@
 package com.tanhua.dubbo.api.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.dubbo.api.RecommendUserApi;
 import com.tanhua.model.mongo.RecommendUser;
 import com.tanhua.model.vo.PageResult;
@@ -53,5 +54,29 @@ public class RecommendUserApiImpl implements RecommendUserApi {
         List<RecommendUser> list = mongoTemplate.find(query, RecommendUser.class);
         //5.构造返回值
         return new PageResult(page, pagesize, count, list);
+    }
+
+    /**
+     * 查询佳人信息
+     *
+     * @param userId
+     * @param toUserId
+     * @return
+     */
+    @Override
+    public RecommendUser queryByUserId(Long userId, Long toUserId) {
+        //构造查询条件
+        Criteria criteria = Criteria.where("userId").is(userId).and("toUserId").is(toUserId);
+        Query query = Query.query(criteria);
+        //构造返回值
+        RecommendUser user = mongoTemplate.findOne(query, RecommendUser.class);
+        if (ObjectUtil.isEmpty(user)) {
+            user = new RecommendUser();
+            user.setUserId(userId);
+            user.setToUserId(toUserId);
+            //构建缘分值
+            user.setScore(95d);
+        }
+        return user;
     }
 }

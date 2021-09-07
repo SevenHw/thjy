@@ -1,7 +1,9 @@
 package com.tanhua.server.service;
 
 import com.aliyuncs.utils.StringUtils;
+import com.tanhua.autoconfig.template.HuanXinTemplate;
 import com.tanhua.autoconfig.template.SmsTemplate;
+import com.tanhua.commons.utils.Constants;
 import com.tanhua.commons.utils.JwtUtils;
 import com.tanhua.dubbo.api.UserApi;
 import com.tanhua.model.domian.User;
@@ -29,6 +31,9 @@ public class UserService {
 
     @DubboReference
     private UserApi userApi;
+
+    @Autowired
+    private HuanXinTemplate huanXinTemplate;
 
     private final String check = "CHECK_CODE_";
 
@@ -74,6 +79,15 @@ public class UserService {
             Long userId = userApi.save(user);
             user.setId(userId);
             isNew = true;
+            //环信庄户密码
+            String hxUser = "hx" + user.getId();
+            String hxpassword = Constants.INIT_PASSWORD;
+            Boolean create = huanXinTemplate.createUser(hxUser, hxpassword);
+            if (create) {
+                user.setHxUser(hxUser);
+                user.setHxPassword(hxpassword);
+                userApi.hxUpdate(user);
+            }
         }
         //6.通过jwt生成token(存入id和手机号)
         Map tokenMap = new HashMap<>();

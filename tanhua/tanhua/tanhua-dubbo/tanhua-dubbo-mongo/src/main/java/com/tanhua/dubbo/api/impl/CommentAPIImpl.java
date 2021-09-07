@@ -63,8 +63,6 @@ public class CommentAPIImpl implements CommentApi {
             return modify.statisCount(comment.getCommentType());
         } else {
             //查询评论发布人id
-            //Criteria criteria = Criteria.where("id").is(comment.getPublishId());
-            //Query query1 = Query.query(criteria);
             Comment commentById = mongoTemplate.findById(comment.getPublishId(), Comment.class);
             //评论发布人的id
             Long userId = commentById.getUserId();
