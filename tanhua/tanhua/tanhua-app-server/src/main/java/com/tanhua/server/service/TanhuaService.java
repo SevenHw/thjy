@@ -12,9 +12,11 @@ import com.tanhua.model.domian.Question;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.dto.RecommendUserDto;
 import com.tanhua.model.mongo.RecommendUser;
+import com.tanhua.model.vo.ErrorResult;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.TodayBest;
 import com.tanhua.server.Interceptor.UserHolder;
+import com.tanhua.server.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -148,6 +150,9 @@ public class TanhuaService {
         map.put("reply", reply);
         String jsonString = JSON.toJSONString(map);
         //发送消息
-        huanXinTemplate.sendMsg(Constants.HX_USER_PREFIX + userId, jsonString);
+        Boolean aBoolean = huanXinTemplate.sendMsg(Constants.HX_USER_PREFIX + userId, jsonString);
+        if (!aBoolean) {
+            throw new BusinessException(ErrorResult.error());
+        }
     }
 }

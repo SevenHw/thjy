@@ -83,7 +83,7 @@ public class UserApiImpl implements UserApi {
     }
 
     /**
-     * 根据用户id查询用户
+     * 根据环信id查询用户
      *
      * @param huanxinId
      * @return

@@ -41,8 +41,7 @@ public class HuanXinTemplate {
     public Boolean addContact(String username1, String username2) {
         try {
             //创建环信用户
-            service.contact().add(username1, username2)
-                    .block();
+            service.contact().add(username1, username2).block();
             return true;
         } catch (Exception e) {
             log.error("添加联系人失败~");

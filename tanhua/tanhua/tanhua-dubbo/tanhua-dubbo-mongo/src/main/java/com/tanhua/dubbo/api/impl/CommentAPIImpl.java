@@ -103,14 +103,6 @@ public class CommentAPIImpl implements CommentApi {
                 .limit(pagesize)
                 .with(Sort.by(Sort.Order.desc("created")));
         return mongoTemplate.find(query, Comment.class);
-        //1、构造查询条件
-       /* Query query = Query.query(
-                Criteria.where("publishId").is(new ObjectId(movementId)).and("commentType").is(comment.getType()))
-                .skip((page - 1) * pagesize)
-                .limit(pagesize)
-                .with(Sort.by(Sort.Order.desc("created")));
-        //2、查询并返回
-        return mongoTemplate.find(query, Comment.class);*/
     }
 
     /**

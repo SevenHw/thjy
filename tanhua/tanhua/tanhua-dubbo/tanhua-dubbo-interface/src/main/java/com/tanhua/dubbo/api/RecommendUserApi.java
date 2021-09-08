@@ -10,9 +10,6 @@ public interface RecommendUserApi {
 
     /**
      * 分页查询
-     *
-     * @param gender
-     * @return
      */
     PageResult queryRecommendUserList(Integer page, Integer pagesize, Long toUserId);
 

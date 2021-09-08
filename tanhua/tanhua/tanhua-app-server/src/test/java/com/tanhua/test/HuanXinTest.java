@@ -1,5 +1,6 @@
 package com.tanhua.test;
 
+import com.easemob.im.server.EMService;
 import com.tanhua.AppServerApplication;
 import com.tanhua.autoconfig.template.HuanXinTemplate;
 import com.tanhua.commons.utils.Constants;
@@ -26,10 +27,12 @@ public class HuanXinTest {
     private HuanXinTemplate huanXinTemplate;
     @DubboReference
     private UserApi userApi;
+    private EMService service;
 
     @Test
     public void tesy() {
-        huanXinTemplate.createUser("user04", "123456");
+        // huanXinTemplate.createUser("user117", "123456");
+        huanXinTemplate.addContact("hx121", "hx1");
     }
 
     @Test

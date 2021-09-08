@@ -17,7 +17,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="aaa" target="1.5" />
       <module name="tanhua" target="1.8" />
       <module name="tanhua-app-server" target="1.8" />
       <module name="tanhua-autoconfig" target="1.8" />
