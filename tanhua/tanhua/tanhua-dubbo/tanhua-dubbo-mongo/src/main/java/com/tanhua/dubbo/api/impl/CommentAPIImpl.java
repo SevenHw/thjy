@@ -35,7 +35,7 @@ public class CommentAPIImpl implements CommentApi {
      */
     @Override
     public Integer save(Comment comment) {
-        if (comment.getCommentType() != CommentType.COMMENTLIKE.getType()) {
+        if (comment.getCommentType() != CommentType.COMMENT.getType()) {
             //1、查询动态
             Movement movement = mongoTemplate.findById(comment.getPublishId(), Movement.class);
             //2、向comment对象设置被评论人属性
@@ -169,7 +169,7 @@ public class CommentAPIImpl implements CommentApi {
         //删除点赞数据
         Criteria criteria = Criteria.where("userId").is(userId)
                 .and("publishId").is(new ObjectId(movementId))
-                .and("commentType").is(CommentType.COMMENTLIKE.getType());
+                .and("commentType").is(CommentType.LIKE.getType());
         Query queryDelete = Query.query(criteria);
         mongoTemplate.remove(queryDelete, Comment.class);
         //修改表
@@ -184,5 +184,30 @@ public class CommentAPIImpl implements CommentApi {
         return modify.statisCount();
     }
 
-
+    @Override
+    public List<Comment> findByUserId(CommentType like, Long userId, Integer page, Integer pagesize) {
+        //点赞
+        if (like.getType() == CommentType.LIKE.getType()) {
+            //构建查询条件
+            Criteria criteria = Criteria.where("publishUserId").is(userId)
+                    .and("commentType").is(CommentType.LIKE.getType());
+            Query query = Query.query(criteria).skip((page - 1) * pagesize).limit(pagesize);
+            //构造返回值
+            return mongoTemplate.find(query, Comment.class);
+        } else if (like.getType() == CommentType.COMMENT.getType()) {
+            //构建查询条件
+            Criteria criteria = Criteria.where("publishUserId").is(userId)
+                    .and("commentType").is(CommentType.COMMENT.getType());
+            Query query = Query.query(criteria).skip((page - 1) * pagesize).limit(pagesize);
+            //构造返回值
+            return mongoTemplate.find(query, Comment.class);
+        } else {
+            //构建查询条件
+            Criteria criteria = Criteria.where("publishUserId").is(userId)
+                    .and("commentType").is(CommentType.LOVE.getType());
+            Query query = Query.query(criteria).skip((page - 1) * pagesize).limit(pagesize);
+            //构造返回值
+            return mongoTemplate.find(query, Comment.class);
+        }
+    }
 }

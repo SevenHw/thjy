@@ -3,16 +3,14 @@ package com.tanhua.server.service;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.autoconfig.template.HuanXinTemplate;
-import com.tanhua.dubbo.api.FriendApi;
-import com.tanhua.dubbo.api.UserApi;
-import com.tanhua.dubbo.api.UserInfoApi;
+import com.tanhua.dubbo.api.*;
+import com.tanhua.model.domian.Announcement;
 import com.tanhua.model.domian.User;
 import com.tanhua.model.domian.UserInfo;
+import com.tanhua.model.enums.CommentType;
+import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Friend;
-import com.tanhua.model.vo.ContactVo;
-import com.tanhua.model.vo.ErrorResult;
-import com.tanhua.model.vo.PageResult;
-import com.tanhua.model.vo.UserInfoVo;
+import com.tanhua.model.vo.*;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -33,12 +31,21 @@ import java.util.Map;
 public class MessagesService {
     @DubboReference
     private UserApi userApi;
+
     @DubboReference
     private UserInfoApi userInfoApi;
+
     @Autowired
     private HuanXinTemplate huanXinTemplate;
+
     @DubboReference
     private FriendApi friendApi;
+
+    @DubboReference
+    private CommentApi commentApi;
+
+    @DubboReference
+    private AnnouncementService announcementService;
 
     /**
      * 根据环信的用户id查询用户详情
@@ -114,4 +121,95 @@ public class MessagesService {
         }
         return new PageResult(page, pagesize, 0L, vos);
     }
+
+    /**
+     * 通用查询
+     *
+     * @param page
+     * @param pagesize
+     * @return
+     */
+    public PageResult inquire(CommentType like, Integer page, Integer pagesize) {
+        if (CommentType.LIKE == like) {
+            //调用api查询数据
+            List<Comment> list = commentApi.findByUserId(like, UserHolder.getUserId(), page, pagesize);
+            //判断是否为空
+            if (CollUtil.isEmpty(list)) {
+                return new PageResult();
+            }
+            //提出其中userId字段
+            List<Long> userIds = CollUtil.getFieldValues(list, "userId", Long.class);
+            UserInfo userInfo = new UserInfo();
+            //通过userId字段查询用户信息
+            Map<Long, UserInfo> map = userInfoApi.findByIds(userIds, userInfo);
+            //船舰存放vo对象的集合
+            List<CommentVo> vos = new ArrayList<>();
+            //遍历查询出的Comment集合
+            for (Comment comment : list) {
+                UserInfo info = map.get(comment.getUserId());
+                if (!ObjectUtil.isEmpty(info)) {
+                    CommentVo vo = CommentVo.init(info, comment);
+                    vos.add(vo);
+                }
+            }
+            return new PageResult(page, pagesize, 0L, vos);
+        } else if (CommentType.COMMENT == like) {
+            //调用api查询数据
+            List<Comment> list = commentApi.findByUserId(like, UserHolder.getUserId(), page, pagesize);
+            //判断是否为空
+            if (CollUtil.isEmpty(list)) {
+                return new PageResult();
+            }
+            //提出其中userId字段
+            List<Long> userIds = CollUtil.getFieldValues(list, "userId", Long.class);
+            UserInfo userInfo = new UserInfo();
+            //通过userId字段查询用户信息
+            Map<Long, UserInfo> map = userInfoApi.findByIds(userIds, userInfo);
+            //船舰存放vo对象的集合
+            List<CommentVo> vos = new ArrayList<>();
+            //遍历查询出的Comment集合
+            for (Comment comment : list) {
+                UserInfo info = map.get(comment.getUserId());
+                if (!ObjectUtil.isEmpty(info)) {
+                    CommentVo vo = CommentVo.init(info, comment);
+                    vos.add(vo);
+                }
+            }
+            return new PageResult(page, pagesize, 0L, vos);
+        } else if (CommentType.LOVE == like) {
+            //调用api查询数据
+            List<Comment> list = commentApi.findByUserId(like, UserHolder.getUserId(), page, pagesize);
+            //判断是否为空
+            if (CollUtil.isEmpty(list)) {
+                return new PageResult();
+            }
+            //提出其中userId字段
+            List<Long> userIds = CollUtil.getFieldValues(list, "userId", Long.class);
+            UserInfo userInfo = new UserInfo();
+            //通过userId字段查询用户信息
+            Map<Long, UserInfo> map = userInfoApi.findByIds(userIds, userInfo);
+            //船舰存放vo对象的集合
+            List<CommentVo> vos = new ArrayList<>();
+            //遍历查询出的Comment集合
+            for (Comment comment : list) {
+                UserInfo info = map.get(comment.getUserId());
+                if (!ObjectUtil.isEmpty(info)) {
+                    CommentVo vo = CommentVo.init(info, comment);
+                    vos.add(vo);
+                }
+            }
+            return new PageResult(page, pagesize, 0L, vos);
+        } else {
+            //调用api查询信息
+            List<Announcement> Announcementds = announcementService.list();
+            List<AnnouncementVo> vos = new ArrayList<>();
+            for (Announcement Announcementd : Announcementds) {
+                AnnouncementVo init = AnnouncementVo.init(Announcementd);
+                vos.add(init);
+            }
+            return new PageResult(page, pagesize, 0L, vos);
+        }
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.tanhua.server.controller;
 
+import com.tanhua.model.enums.CommentType;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.UserInfoVo;
 import com.tanhua.server.service.MessagesService;
@@ -45,15 +46,59 @@ public class MessagesController {
     }
 
     /**
-     * /messages/contacts
      * 查看好友列表
+     * /messages/contacts
      */
     @GetMapping("contacts")
     public ResponseEntity contactsGet(@RequestParam(defaultValue = "1") Integer page,
                                       @RequestParam(defaultValue = "10") Integer pagesize,
                                       String keyword) {
 
-        PageResult vo = messagesService.contactsGet(page,pagesize,keyword);
+        PageResult vo = messagesService.contactsGet(page, pagesize, keyword);
+        return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 点赞列表
+     * /messages/likes
+     */
+    @GetMapping("likes")
+    public ResponseEntity likes(@RequestParam(defaultValue = "1") Integer page,
+                                @RequestParam(defaultValue = "10") Integer pagesize) {
+        PageResult vo = messagesService.inquire(CommentType.LIKE, page, pagesize);
+        return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 评论列表
+     * /messages/comments
+     */
+    @GetMapping("comments")
+    public ResponseEntity comments(@RequestParam(defaultValue = "1") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer pagesize) {
+        PageResult vo = messagesService.inquire(CommentType.COMMENT, page, pagesize);
+        return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 喜欢列表
+     * /messages/loves
+     */
+    @GetMapping("loves")
+    public ResponseEntity loves(@RequestParam(defaultValue = "1") Integer page,
+                                @RequestParam(defaultValue = "10") Integer pagesize) {
+        PageResult vo = messagesService.inquire(CommentType.LOVE, page, pagesize);
+        return ResponseEntity.ok(vo);
+    }
+
+    /**
+     * 公告列表
+     * /messages/announcements
+     */
+    @GetMapping("announcements")
+    public ResponseEntity announcements(@RequestParam(defaultValue = "1") Integer page,
+                                        @RequestParam(defaultValue = "10") Integer pagesize) {
+        PageResult vo = messagesService.inquire(CommentType.ANNOUNCEMENT, page, pagesize);
         return ResponseEntity.ok(vo);
     }
 

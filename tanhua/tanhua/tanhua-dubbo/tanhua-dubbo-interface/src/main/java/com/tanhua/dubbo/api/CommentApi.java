@@ -31,6 +31,23 @@ public interface CommentApi {
 
     Integer delete(Comment comment);
 
-    //根据推荐id查询
-    Integer find(String movementId,Long userId);
+    /**
+     * 根据推荐id查询
+     *
+     * @param movementId
+     * @param userId
+     * @return
+     */
+    Integer find(String movementId, Long userId);
+
+    /**
+     * 查询点赞
+     *
+     * @param like
+     * @param userId
+     * @param page
+     * @param pagesize
+     * @return
+     */
+    List<Comment> findByUserId(CommentType like, Long userId, Integer page, Integer pagesize);
 }

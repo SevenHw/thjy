@@ -4,10 +4,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.commons.utils.Constants;
 import com.tanhua.dubbo.api.CommentApi;
+import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.api.UserInfoApi;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.enums.CommentType;
 import com.tanhua.model.mongo.Comment;
+import com.tanhua.model.mongo.Movement;
 import com.tanhua.model.vo.CommentVo;
 import com.tanhua.model.vo.ErrorResult;
 import com.tanhua.model.vo.PageResult;
@@ -38,6 +40,8 @@ public class CommentsService {
     private UserInfoApi userInfoApi;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @DubboReference
+    private MovementApi movementApi;
 
 
     /**
@@ -50,11 +54,13 @@ public class CommentsService {
         //1、获取操作用户id
         Long userId = UserHolder.getUserId();
         //2、构造Comment
+        Movement movement = movementApi.findById(movementId);
         Comment comment1 = new Comment();
         comment1.setPublishId(new ObjectId(movementId));
         comment1.setCommentType(CommentType.COMMENT.getType());
         comment1.setContent(comment);
         comment1.setUserId(userId);
+        comment1.setPublishUserId(movement.getUserId());
         comment1.setCreated(System.currentTimeMillis());
         //3、调用API保存评论
         Integer commentCount = commentApi.save(comment1);
@@ -158,7 +164,7 @@ public class CommentsService {
      * @return
      */
     public Integer commentDislike(String movementId) {
-        CommentType like = CommentType.COMMENTLIKE;
+        CommentType like = CommentType.LIKE;
         String hashkey = Constants.MOVEMENT_COMMENT_HASHKEY;
         //查看是否点赞
         Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
@@ -183,7 +189,7 @@ public class CommentsService {
      * @return
      */
     public Integer commentLike(String movementId) {
-        CommentType like = CommentType.COMMENTLIKE;
+        CommentType like = CommentType.LIKE;
         String hashkey = Constants.MOVEMENT_COMMENT_HASHKEY;
         //查看是否点赞
         Boolean hasComment = commentApi.hasComment(movementId, UserHolder.getUserId(), like);
@@ -191,12 +197,14 @@ public class CommentsService {
         if (hasComment) {
             throw new BusinessException(ErrorResult.likeError());
         }
+        Movement movement = movementApi.findById(movementId);
         //通过评论id查出动态id
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(movementId));
         comment.setCommentType(like.getType());
         comment.setUserId(UserHolder.getUserId());
         comment.setCreated(System.currentTimeMillis());
+        comment.setPublishUserId(movement.getUserId());
         Integer count = commentApi.save(comment);
         //4、拼接redis的key，将用户的点赞状态存入redis
         String key = Constants.MOVEMENTS_INTERACT_KEY + movementId;
@@ -220,12 +228,14 @@ public class CommentsService {
         if (hasComment) {
             throw new BusinessException(ErrorResult.loveError());
         }
+        Movement movement = movementApi.findById(movementId);
         //调用api保存数据到mongodb
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(movementId));
         comment.setCommentType(like.getType());
         comment.setUserId(UserHolder.getUserId());
         comment.setCreated(System.currentTimeMillis());
+        comment.setPublishUserId(movement.getUserId());
         Integer count = commentApi.save(comment);
         //4、拼接redis的key，将用户的点赞状态存入redis
         String key = Constants.MOVEMENTS_INTERACT_KEY + movementId;

@@ -1,11 +1,11 @@
 package com.tanhua.model.enums;
 
 /**
- * 评论类型：1-点赞，2-评论，3-喜欢
+ * 评论类型：1-点赞，2-评论，3-喜欢 4-公告
  */
 public enum CommentType {
 
-    LIKE(1), COMMENT(2), LOVE(3), COMMENTLIKE(4);
+    LIKE(1), COMMENT(2), LOVE(3), ANNOUNCEMENT(4);
 
     int type;
 
