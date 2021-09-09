@@ -1,13 +1,16 @@
 package com.tanhua.server.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.tanhua.autoconfig.template.HuanXinTemplate;
 import com.tanhua.commons.utils.Constants;
 import com.tanhua.dubbo.api.QuestionApi;
 import com.tanhua.dubbo.api.RecommendUserApi;
 import com.tanhua.dubbo.api.UserInfoApi;
+import com.tanhua.dubbo.api.UserLikeApi;
 import com.tanhua.model.domian.Question;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.dto.RecommendUserDto;
@@ -19,6 +22,8 @@ import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,6 +44,17 @@ public class TanhuaService {
 
     @Autowired
     private HuanXinTemplate huanXinTemplate;
+    @DubboReference
+    private UserLikeApi userLikeApi;
+
+    @Value("${tanhua.default.recommend.users}")
+    private String recommendUser;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Autowired
+    private MessagesService messagesService;
 
     /**
      * 今日佳人
@@ -153,6 +169,94 @@ public class TanhuaService {
         Boolean aBoolean = huanXinTemplate.sendMsg(Constants.HX_USER_PREFIX + userId, jsonString);
         if (!aBoolean) {
             throw new BusinessException(ErrorResult.error());
+        }
+    }
+
+    /**
+     * 探花-左滑右滑
+     * /tanhua/cards
+     */
+    public List<TodayBest> cards() {
+        //当前操作用户id
+        Long userId = UserHolder.getUserId();
+        //查询出的条数
+        Integer index = 10;
+        //查询出用户喜欢和不喜欢的集合
+        List<RecommendUser> recommendUsers = recommendUserApi.findByUserId(userId, index);
+        // 判断查询出的用户是否存在
+        if (CollUtil.isEmpty(recommendUsers)) {
+            //如果不存在,调用自己设置的用户
+            recommendUsers = new ArrayList<>();
+            //字符串分割设置的用户id
+            String[] userIdS = recommendUser.split(",");
+            for (String myUserId : userIdS) {
+                RecommendUser recommendUser = new RecommendUser();
+                recommendUser.setUserId(Convert.toLong(myUserId));
+                recommendUser.setToUserId(UserHolder.getUserId());
+                recommendUser.setScore(RandomUtil.randomDouble(60, 90));
+                recommendUsers.add(recommendUser);
+            }
+        }
+        //获得userId这个字段所有的值
+        List<Long> ids = CollUtil.getFieldValues(recommendUsers, "userId", Long.class);
+        UserInfo userInfo = new UserInfo();
+        //调用api查询获取对象
+        Map<Long, UserInfo> map = userInfoApi.findByIds(ids, userInfo);
+        List<TodayBest> vos = new ArrayList<>();
+        for (RecommendUser list : recommendUsers) {
+            UserInfo info = map.get(list.getUserId());
+            if (!ObjectUtil.isEmpty(info)) {
+                TodayBest todayBest = TodayBest.init(info, list);
+                vos.add(todayBest);
+            }
+        }
+        return vos;
+    }
+
+    /**
+     * 探花喜欢
+     *
+     * @param likeUserId
+     */
+    public void love(Long likeUserId) {
+        //将数据保存的mongodb
+        Boolean save = userLikeApi.save(UserHolder.getUserId(), likeUserId, true);
+        if (!save) {
+            throw new BusinessException(ErrorResult.error());
+        }
+        //操作redis喜欢的数据,删除不喜欢的数据
+        redisTemplate.opsForSet().remove(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        redisTemplate.opsForSet().add(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        //判断是否双向喜欢
+        if (isLike(likeUserId, UserHolder.getUserId())) {
+            //如果双向喜欢添加好友
+            messagesService.contacts(likeUserId);
+        }
+    }
+
+    public Boolean isLike(Long userId, Long likeUserId) {
+        String key = Constants.USER_LIKE_KEY + userId;
+        return redisTemplate.opsForSet().isMember(key, likeUserId.toString());
+    }
+
+    /**
+     * 探花不喜欢
+     *
+     * @param likeUserId
+     */
+    public void unlove(Long likeUserId) {
+        //将数据保存的mongodb
+        Boolean save = userLikeApi.save(UserHolder.getUserId(), likeUserId, false);
+        if (!save) {
+            throw new BusinessException(ErrorResult.error());
+        }
+        //操作redis喜欢的数据,删除不喜欢的数据
+        redisTemplate.opsForSet().add(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        redisTemplate.opsForSet().remove(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        //判断是否双向喜欢
+        if (isLike(likeUserId, UserHolder.getUserId())) {
+            //如果双向喜欢添加好友
+            messagesService.contacts(likeUserId);
         }
     }
 }

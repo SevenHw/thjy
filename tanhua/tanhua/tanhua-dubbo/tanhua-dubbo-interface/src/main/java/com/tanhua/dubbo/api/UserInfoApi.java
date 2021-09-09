@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserInfoApi {
-    public void save(UserInfo userInfo);
+     void save(UserInfo userInfo);
 
     void update(UserInfo userInfo);
 

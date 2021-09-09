@@ -1,13 +1,18 @@
 package com.tanhua.dubbo.api.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.dubbo.api.RecommendUserApi;
 import com.tanhua.model.mongo.RecommendUser;
+import com.tanhua.model.mongo.UserLike;
 import com.tanhua.model.vo.PageResult;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -79,4 +84,33 @@ public class RecommendUserApiImpl implements RecommendUserApi {
         }
         return user;
     }
+
+    /**
+     * 查询不喜欢和喜欢的数据
+     *
+     * @param userId
+     * @param index
+     * @return
+     */
+    @Override
+    public List<RecommendUser> findByUserId(Long userId, Integer index) {
+        Criteria criteria = Criteria.where("userId").is(userId);
+        Query query = Query.query(criteria);
+        //查询出所有的不喜欢
+        List<UserLike> userLikes = mongoTemplate.find(query, UserLike.class);
+        //获取其中所有的toUserId
+        List<Long> toUserId = CollUtil.getFieldValues(userLikes, "likeUserId", Long.class);
+        //2、构造查询推荐用户的条件
+        Criteria criteriaRecommend = Criteria.where("toUserId").is(userId).and("userId").nin(userLikes);
+        //3、使用统计函数，随机获取推荐的用户列表
+        TypedAggregation<RecommendUser> newAggregation = TypedAggregation.newAggregation(RecommendUser.class,
+                Aggregation.match(criteriaRecommend),//指定查询条件
+                Aggregation.sample(index)//查询数量
+        );
+        AggregationResults<RecommendUser> results = mongoTemplate.aggregate(newAggregation, RecommendUser.class);
+        //4、构造返回
+        return results.getMappedResults();
+    }
+
+
 }

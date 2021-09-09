@@ -44,4 +44,10 @@ public class Constants {
 
     //jwt超时时间
     public static final int JWT_TIME_OUT = 3_600;
+
+    //用户喜欢Redis的key
+    public static final String USER_LIKE_KEY="USER_LIKE_SET_";
+
+    //用户不喜欢Redis的key
+    public static final String USER_NOT_LIKE_KEY="USER_NOT_LIKE_SET_";
 }

@@ -53,7 +53,6 @@ public class MessagesController {
     public ResponseEntity contactsGet(@RequestParam(defaultValue = "1") Integer page,
                                       @RequestParam(defaultValue = "10") Integer pagesize,
                                       String keyword) {
-
         PageResult vo = messagesService.contactsGet(page, pagesize, keyword);
         return ResponseEntity.ok(vo);
     }

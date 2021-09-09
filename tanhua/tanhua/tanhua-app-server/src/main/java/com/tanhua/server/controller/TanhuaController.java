@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -70,4 +71,35 @@ public class TanhuaController {
         tanhuaService.strangerQues(userId, reply);
         return ResponseEntity.ok(null);
     }
+
+    /**
+     * 探花-左滑右滑
+     * /tanhua/cards
+     */
+    @GetMapping("cards")
+    public ResponseEntity cards() {
+        List<TodayBest> tb = tanhuaService.cards();
+        return ResponseEntity.ok(tb);
+    }
+
+    /**
+     * 探花-喜欢
+     * /tanhua/:id/love
+     */
+    @GetMapping("{id}/love")
+    public ResponseEntity love(@PathVariable("id") Long userId) {
+        tanhuaService.love(userId);
+        return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 探花-不喜欢
+     * /tanhua/:id/unlove
+     */
+    @GetMapping("{id}/unlove")
+    public ResponseEntity unlove(@PathVariable("id") Long userId) {
+        tanhuaService.unlove(userId);
+        return ResponseEntity.ok(null);
+    }
+
 }

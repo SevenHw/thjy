@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
  * @program: tanhua
  * @author: Seven
  * @create: 2021-09-09 11:53
+ * <p>
+ * 通知
  **/
 @EqualsAndHashCode(callSuper = true)
 @Data
