@@ -26,10 +26,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TanhuaService {
@@ -143,7 +140,7 @@ public class TanhuaService {
         visitors.setDate(System.currentTimeMillis());
         visitors.setVisitDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         visitors.setScore(user.getScore());
-        visitorsApi.save(visitors);
+        //visitorsApi.save(visitors);
         //构造返回值
         return TodayBest.init(userInfo, user);
     }
