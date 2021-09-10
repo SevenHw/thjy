@@ -7,15 +7,14 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.tanhua.autoconfig.template.HuanXinTemplate;
 import com.tanhua.commons.utils.Constants;
-import com.tanhua.dubbo.api.QuestionApi;
-import com.tanhua.dubbo.api.RecommendUserApi;
-import com.tanhua.dubbo.api.UserInfoApi;
-import com.tanhua.dubbo.api.UserLikeApi;
+import com.tanhua.dubbo.api.*;
 import com.tanhua.model.domian.Question;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.dto.RecommendUserDto;
 import com.tanhua.model.mongo.RecommendUser;
+import com.tanhua.model.mongo.Visitors;
 import com.tanhua.model.vo.ErrorResult;
+import com.tanhua.model.vo.NearUserVo;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.TodayBest;
 import com.tanhua.server.Interceptor.UserHolder;
@@ -26,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +44,7 @@ public class TanhuaService {
 
     @Autowired
     private HuanXinTemplate huanXinTemplate;
+
     @DubboReference
     private UserLikeApi userLikeApi;
 
@@ -55,6 +56,12 @@ public class TanhuaService {
 
     @Autowired
     private MessagesService messagesService;
+
+    @Autowired
+    private UserLocationApi userLocationApi;
+
+    @DubboReference
+    private VisitorsApi visitorsApi;
 
     /**
      * 今日佳人
@@ -128,6 +135,15 @@ public class TanhuaService {
         UserInfo userInfo = userInfoApi.findById(userId);
         //根据操作人id和查看的用户id,查询两者的推荐数据
         RecommendUser user = recommendUserApi.queryByUserId(userId, UserHolder.getUserId());
+        //构造访客数据，调用API保存
+        Visitors visitors = new Visitors();
+        visitors.setUserId(userId);
+        visitors.setVisitorUserId(UserHolder.getUserId());
+        visitors.setFrom("首页");
+        visitors.setDate(System.currentTimeMillis());
+        visitors.setVisitDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
+        visitors.setScore(user.getScore());
+        visitorsApi.save(visitors);
         //构造返回值
         return TodayBest.init(userInfo, user);
     }
@@ -258,5 +274,39 @@ public class TanhuaService {
             //如果双向喜欢添加好友
             messagesService.contacts(likeUserId);
         }
+    }
+
+    /**
+     * 搜附近
+     *
+     * @param gender
+     * @param distance
+     * @return
+     */
+    public List<NearUserVo> search(String gender, String distance) {
+        Long userId = UserHolder.getUserId();
+        //通过当前操作用户的id查询出附近所有的人
+        List<Long> userIds = userLocationApi.findByUser(userId, Double.valueOf(distance));
+        //判断是否为空
+        if (ObjectUtil.isEmpty(userIds)) {
+            return new ArrayList<NearUserVo>();
+        }
+        UserInfo userInfo = new UserInfo();
+        //查询出所有用户详情
+        Map<Long, UserInfo> map = userInfoApi.findByIds(userIds, userInfo);
+        //判断返回的集合是否为空
+        if (ObjectUtil.isEmpty(map)) {
+            return new ArrayList<NearUserVo>();
+        }
+        //创建集合接收满足条件的对象
+        List<NearUserVo> vos = new ArrayList<>();
+        for (Long id : userIds) {
+            UserInfo info = map.get(id);
+            if (!ObjectUtil.isEmpty(info)) {
+                NearUserVo nearUserVo = NearUserVo.init(info);
+                vos.add(nearUserVo);
+            }
+        }
+        return vos;
     }
 }

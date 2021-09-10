@@ -6,8 +6,10 @@ import com.tanhua.autoconfig.template.SmsTemplate;
 import com.tanhua.commons.utils.Constants;
 import com.tanhua.commons.utils.JwtUtils;
 import com.tanhua.dubbo.api.UserApi;
+import com.tanhua.dubbo.api.UserLikeApi;
 import com.tanhua.model.domian.User;
 import com.tanhua.model.vo.ErrorResult;
+import com.tanhua.model.vo.PageResult;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -34,6 +36,9 @@ public class UserService {
 
     @Autowired
     private HuanXinTemplate huanXinTemplate;
+
+    @DubboReference
+    private UserLikeApi userLikeApi;
 
     private final String check = "CHECK_CODE_";
 
@@ -126,5 +131,29 @@ public class UserService {
         Long userId = UserHolder.getUserId();
         //调用userApi修改手机号码
         userApi.update(phone, userId);
+    }
+
+    /**
+     * 互相喜欢，喜欢，粉丝 - 统计
+     */
+    public Map counts() {
+        //获取当前用户id
+        Long userId = UserHolder.getUserId();
+        Map map = userLikeApi.loveUniversal(userId);
+        return map;
+    }
+
+    /**
+     * 互相喜欢、喜欢、粉丝、谁看过我 - 翻页列表
+     *
+     * @param map
+     * @param page
+     * @param pagesize
+     * @param nickname
+     * @return
+     */
+    public PageResult friends(Map map, Integer page, Integer pagesize, String nickname) {
+
+        return null;
     }
 }

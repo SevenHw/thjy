@@ -33,7 +33,7 @@
       <module name="tanhua-app-server" options="-parameters" />
       <module name="tanhua-autoconfig" options="-parameters" />
       <module name="tanhua-commons" options="-parameters" />
-      <module name="tanhua-dubbo" options="-parameters" />
+      <module name="tanhua-dubbo" options="" />
       <module name="tanhua-dubbo-db" options="-parameters" />
       <module name="tanhua-dubbo-interface" options="-parameters" />
       <module name="tanhua-dubbo-mongo" options="-parameters" />

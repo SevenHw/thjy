@@ -1,6 +1,7 @@
 package com.tanhua.server.controller;
 
 import com.tanhua.model.dto.RecommendUserDto;
+import com.tanhua.model.vo.NearUserVo;
 import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.TodayBest;
 import com.tanhua.server.service.TanhuaService;
@@ -100,6 +101,19 @@ public class TanhuaController {
     public ResponseEntity unlove(@PathVariable("id") Long userId) {
         tanhuaService.unlove(userId);
         return ResponseEntity.ok(null);
+    }
+
+    /**
+     * 搜附近
+     * <p>
+     * /tanhua/search
+     */
+    @GetMapping("search")
+    public ResponseEntity search(String gender,
+                                 @RequestParam(defaultValue = "2000") String distance) {
+
+        List<NearUserVo> vo = tanhuaService.search(gender, distance);
+        return ResponseEntity.ok(vo);
     }
 
 }
