@@ -4,17 +4,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.itcast</groupId>
+    <groupId>com.seven</groupId>
     <artifactId>tanhua</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>tanhua-app-server</module>
         <module>tanhua-autoconfig</module>
-        <module>tanhua-commons</module>
-        <module>tanhua-dubbo</module>
         <module>tanhua-model</module>
+        <module>tanhua-dubbo</module>
+        <module>tanhua-commons</module>
+        <module>tanhua-app-server</module>
     </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -57,11 +58,13 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.4.3</version>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -70,6 +73,7 @@
     </dependencies>
 
     <dependencyManagement>
+
         <dependencies>
             <dependency>
                 <groupId>io.netty</groupId>
@@ -86,27 +90,10 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-bom</artifactId>
-                <version>4.1.59.Final</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>io.projectreactor</groupId>
-                <artifactId>reactor-bom</artifactId>
-                <version>2020.0.4</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>io.projectreactor.netty</groupId>
                 <artifactId>reactor-netty</artifactId>
                 <version>0.9.8.RELEASE</version>
             </dependency>
-
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -183,7 +170,6 @@
                 <artifactId>commons-codec</artifactId>
                 <version>1.11</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -202,5 +188,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -9,7 +9,6 @@ import com.tanhua.dubbo.api.UserApi;
 import com.tanhua.dubbo.api.UserLikeApi;
 import com.tanhua.model.domian.User;
 import com.tanhua.model.vo.ErrorResult;
-import com.tanhua.model.vo.PageResult;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -143,17 +142,5 @@ public class UserService {
         return map;
     }
 
-    /**
-     * 互相喜欢、喜欢、粉丝、谁看过我 - 翻页列表
-     *
-     * @param map
-     * @param page
-     * @param pagesize
-     * @param nickname
-     * @return
-     */
-    public PageResult friends(Map map, Integer page, Integer pagesize, String nickname) {
 
-        return null;
-    }
 }

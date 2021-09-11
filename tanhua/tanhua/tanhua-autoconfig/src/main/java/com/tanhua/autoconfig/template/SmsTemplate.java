@@ -16,35 +16,6 @@ public class SmsTemplate {
     }
 
     public void sendSms(String mobile, String code) {
-/*
-        try {
-            //配置阿里云
-            Config config = new Config()
-                    // 您的AccessKey ID
-                    .setAccessKeyId(properties.getAccessKey())
-                    // 您的AccessKey Secret
-                    .setAccessKeySecret(properties.getSecret());
-            // 访问的域名
-            config.endpoint = "dysmsapi.aliyuncs.com";
-
-            com.aliyun.dysmsapi20170525.Client client =  new com.aliyun.dysmsapi20170525.Client(config);
-
-            SendSmsRequest sendSmsRequest = new SendSmsRequest()
-                    .setPhoneNumbers(mobile)
-                    .setSignName(properties.getSignName())
-                    .setTemplateCode(properties.getTemplateCode())
-                    .setTemplateParam("{\"code\":\""+code+"\"}");
-            // 复制代码运行请自行打印 API 的返回值
-            SendSmsResponse response = client.sendSms(sendSmsRequest);
-
-            SendSmsResponseBody body = response.getBody();
-
-            System.out.println(body.getMessage());
-
-        }catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
 
         HttpClient client = new HttpClient();
         PostMethod method = new PostMethod(Url);
@@ -86,9 +57,8 @@ public class SmsTemplate {
             if ("2".equals(index)) {
                 System.out.println("短信提交成功");
             }
-
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
     }

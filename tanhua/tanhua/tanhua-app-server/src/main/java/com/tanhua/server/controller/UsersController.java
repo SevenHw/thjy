@@ -1,7 +1,6 @@
 package com.tanhua.server.controller;
 
 import com.tanhua.model.domian.UserInfo;
-import com.tanhua.model.vo.PageResult;
 import com.tanhua.model.vo.UserInfoVo;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.service.UserService;
@@ -114,18 +113,5 @@ public class UsersController {
     public ResponseEntity counts() {
         Map map = userService.counts();
         return ResponseEntity.ok(map);
-    }
-
-    /**
-     * 互相喜欢、喜欢、粉丝、谁看过我 - 翻页列表
-     * /users/friends/:type
-     */
-    @GetMapping("friends/{type}")
-    public ResponseEntity friends(@PathVariable("type") Map map,
-                                  @RequestParam(defaultValue = "1") Integer page,
-                                  @RequestParam(defaultValue = "10") Integer pagesize,
-                                 String nickname ) {
-        PageResult pr = userService.friends(map,page,pagesize,nickname);
-        return ResponseEntity.ok(pr);
     }
 }

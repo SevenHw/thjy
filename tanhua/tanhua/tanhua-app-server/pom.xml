@@ -4,12 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>tanhua</artifactId>
-        <groupId>cn.itcast</groupId>
+        <groupId>com.seven</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tanhua-app-server</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
 
@@ -81,47 +86,43 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
 
-        <!-- nacos配置中心依赖支持
+        <!-- nacos配置中心依赖支持-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
-        -->
-        <!--RabbitMQ
+
+        <!--RabbitMQ-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
-        -->
+
         <dependency>
-            <groupId>cn.itcast</groupId>
+            <groupId>com.seven</groupId>
             <artifactId>tanhua-dubbo-interface</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>cn.itcast</groupId>
+            <groupId>com.seven</groupId>
             <artifactId>tanhua-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>cn.itcast</groupId>
+            <groupId>com.seven</groupId>
             <artifactId>tanhua-autoconfig</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>dysmsapi20170525</artifactId>
-            <version>2.0.1</version>
-        </dependency>
     </dependencies>
-
     <build>
         <finalName>tanhua-app-server</finalName>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.3.9.RELEASE</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>
