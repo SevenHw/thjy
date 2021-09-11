@@ -3,6 +3,7 @@ package com.tanhua.server.controller;
 import com.tanhua.model.mongo.Movement;
 import com.tanhua.model.vo.MovementsVo;
 import com.tanhua.model.vo.PageResult;
+import com.tanhua.model.vo.VisitorsVo;
 import com.tanhua.server.service.CommentsService;
 import com.tanhua.server.service.MovementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/movements")
@@ -131,6 +133,17 @@ public class MovementController {
     @GetMapping("/{id}/unlove")
     public ResponseEntity unlove(@PathVariable("id") String movementId) {
         Integer pr = commentsService.unlove(movementId);
+        return ResponseEntity.ok(pr);
+    }
+
+    /**
+     * 谁看过我
+     * /movements/visitors
+     * @return
+     */
+    @GetMapping("visitors")
+    public ResponseEntity visitors() {
+        List<VisitorsVo> pr = commentsService.visitors();
         return ResponseEntity.ok(pr);
     }
 }

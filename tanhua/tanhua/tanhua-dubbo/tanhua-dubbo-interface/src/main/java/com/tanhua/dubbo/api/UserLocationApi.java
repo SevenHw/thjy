@@ -16,5 +16,12 @@ public interface UserLocationApi {
      */
     Boolean updateLocation(Long userId, Double latitude, Double longitude, String addrStr);
 
-    List<Long>  findByUser(Long userId, Double valueOf);
+    /**
+     * 搜附近
+     *
+     * @param userId
+     * @param valueOf
+     * @return
+     */
+    List<Long> findByUser(Long userId, Double valueOf);
 }

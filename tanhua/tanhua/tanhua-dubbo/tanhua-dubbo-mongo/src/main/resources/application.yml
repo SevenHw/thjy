@@ -18,5 +18,3 @@ dubbo:
     address: spring-cloud://localhost
   scan:
     base-packages: com.tanhua.dubbo.api  #dubbo中包扫描
-  consumer:
-    timeout: 500000

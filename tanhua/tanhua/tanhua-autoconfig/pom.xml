@@ -46,13 +46,6 @@
             <artifactId>java-sdk</artifactId>
             <version>4.8.0</version>
         </dependency>
-        <!--阿里云内容审核-->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-green</artifactId>
-            <version>3.6.1</version>
-        </dependency>
-
         <!--springboot基础起步依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -22,7 +22,9 @@ import com.tanhua.server.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +51,7 @@ public class TanhuaService {
     private String recommendUser;
 
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String,String> redisTemplate;
 
     @Autowired
     private MessagesService messagesService;
@@ -140,7 +142,15 @@ public class TanhuaService {
         visitors.setDate(System.currentTimeMillis());
         visitors.setVisitDate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         visitors.setScore(user.getScore());
-        //visitorsApi.save(visitors);
+        Boolean flag = visitorsApi.save(visitors);
+        if (flag) {
+            //如果保存成功 将时间存进redis
+            String key = Constants.VISITORS_USER;   //hash的大键
+            String hashKey = String.valueOf(visitors.getVisitorUserId());  //hash的小键     用户的id      被看人的id
+            String value = String.valueOf(System.currentTimeMillis());   //被看的时间
+            HashOperations<String, String, String> hash = redisTemplate.opsForHash();
+            redisTemplate.opsForHash().put(key, hashKey, value);
+        }
         //构造返回值
         return TodayBest.init(userInfo, user);
     }
@@ -238,8 +248,9 @@ public class TanhuaService {
             throw new BusinessException(ErrorResult.error());
         }
         //操作redis喜欢的数据,删除不喜欢的数据
-        redisTemplate.opsForSet().remove(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
-        redisTemplate.opsForSet().add(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        SetOperations<String, String> set = redisTemplate.opsForSet();
+        set.remove(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        set.add(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
         //判断是否双向喜欢
         if (isLike(likeUserId, UserHolder.getUserId())) {
             //如果双向喜欢添加好友
@@ -264,8 +275,10 @@ public class TanhuaService {
             throw new BusinessException(ErrorResult.error());
         }
         //操作redis喜欢的数据,删除不喜欢的数据
-        redisTemplate.opsForSet().add(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
-        redisTemplate.opsForSet().remove(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        SetOperations<String, String> set = redisTemplate.opsForSet();
+        set.add(Constants.USER_NOT_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+        set.remove(Constants.USER_LIKE_KEY + UserHolder.getUserId(), likeUserId.toString());
+
         //判断是否双向喜欢
         if (isLike(likeUserId, UserHolder.getUserId())) {
             //如果双向喜欢添加好友

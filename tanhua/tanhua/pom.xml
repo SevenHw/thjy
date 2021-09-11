@@ -90,11 +90,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.projectreactor.netty</groupId>
-                <artifactId>reactor-netty</artifactId>
-                <version>0.9.8.RELEASE</version>
-            </dependency>
-            <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>${spring-cloud.version}</version>

@@ -6,21 +6,20 @@ import java.util.List;
 
 public interface VisitorsApi {
 
+
     /**
-     * 保存访客数据
+     * 根据时间和当前操作用户id查询信息
      *
-     * @param userId 我的id
-     * @param visitorUserId 访客id
-     * @param from 来源
+     * @param date
+     * @param userId
      * @return
      */
-    String save(Long userId, Long visitorUserId, String from);
+    List<Visitors> findByUsers(Long date, Long userId);
 
     /**
-     * 查询我的访客数据，存在2种情况：
-     * 1. 我没有看过我的访客数据，返回前5个访客信息
-     * 2. 之前看过我的访客，从上一次查看的时间点往后查询5个访客数据
+     * 保存用户数据
+     *
+     * @param visitors
      */
-    List<Visitors> queryMyVisitor(Long userId);
-
+    Boolean save(Visitors visitors);
 }

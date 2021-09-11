@@ -6,16 +6,20 @@ import com.tanhua.commons.utils.Constants;
 import com.tanhua.dubbo.api.CommentApi;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.api.UserInfoApi;
+import com.tanhua.dubbo.api.VisitorsApi;
 import com.tanhua.model.domian.UserInfo;
 import com.tanhua.model.enums.CommentType;
 import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Movement;
+import com.tanhua.model.mongo.Visitors;
 import com.tanhua.model.vo.CommentVo;
 import com.tanhua.model.vo.ErrorResult;
 import com.tanhua.model.vo.PageResult;
+import com.tanhua.model.vo.VisitorsVo;
 import com.tanhua.server.Interceptor.UserHolder;
 import com.tanhua.server.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,8 @@ public class CommentsService {
     private RedisTemplate<String, String> redisTemplate;
     @DubboReference
     private MovementApi movementApi;
+    @DubboReference
+    private VisitorsApi visitorsApi;
 
 
     /**
@@ -273,4 +279,40 @@ public class CommentsService {
     }
 
 
+    /**
+     * 谁看过我
+     *
+     * @return
+     */
+    public List<VisitorsVo> visitors() {
+        //获取当前用户id
+        Long userId = UserHolder.getUserId();
+        //当前时间
+        long time = System.currentTimeMillis();
+        //查询访问时间
+        String key = Constants.VISITORS_USER;
+        String hashKey = String.valueOf(userId);
+        String value = (String) redisTemplate.opsForHash().get(key, hashKey);
+        Long date = StringUtils.isEmpty(value) ? null : Long.valueOf(value);
+        //调用api查询用户
+        List<Visitors> list = visitorsApi.findByUsers(date, userId);
+        //判断是否为空
+        if (ObjectUtil.isEmpty(list)) {
+            return new ArrayList<VisitorsVo>();
+        }
+        //获得来访用户id
+        List<Long> visitorUserIds = CollUtil.getFieldValues(list, "visitorUserId", Long.class);
+        //查询来访用户信息
+        //得到来访用户id信息
+        Map<Long, UserInfo> map = userInfoApi.findByIds(visitorUserIds, null);
+        List<VisitorsVo> vos = new ArrayList<>();
+        for (Visitors visitors : list) {
+            UserInfo info = map.get(visitors.getVisitorUserId());
+            if (!ObjectUtil.isEmpty(info)) {
+                VisitorsVo vo = VisitorsVo.init(info, visitors);
+                vos.add(vo);
+            }
+        }
+        return vos;
+    }
 }
