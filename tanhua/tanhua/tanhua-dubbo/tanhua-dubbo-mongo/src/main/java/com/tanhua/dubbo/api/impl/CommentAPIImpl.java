@@ -5,6 +5,7 @@ import com.tanhua.dubbo.api.CommentApi;
 import com.tanhua.model.enums.CommentType;
 import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Movement;
+import com.tanhua.model.mongo.Video;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,5 +210,75 @@ public class CommentAPIImpl implements CommentApi {
             //构造返回值
             return mongoTemplate.find(query, Comment.class);
         }
+    }
+
+    @Override
+    public void saveVideo(Comment comment) {
+        mongoTemplate.save(comment);
+        Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+        Update update = new Update();
+        if (comment.getCommentType() == 2) {
+            update.inc("commentCount", 1);
+        } else if (comment.getCommentType() == 1) {
+            update.inc("likeCount", 1);
+        }
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        //获取更新后的最新数据
+        options.returnNew(true);
+        mongoTemplate.findAndModify(query, update, options, Video.class);
+    }
+
+    @Override
+    public void saveVideoComments(Comment comment) {
+        mongoTemplate.save(comment);
+        Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+        Update update = new Update();
+        update.inc("likeCount", 1);
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        //获取更新后的最新数据
+        options.returnNew(true);
+        mongoTemplate.findAndModify(query, update, options, Comment.class);
+    }
+
+    @Override
+    public void deleteComments(Comment comment) {
+        //删除点赞数据
+        Criteria criteria = Criteria.where("userId").is(comment.getUserId())
+                .and("publishId").is(comment.getPublishId())
+                .and("commentType").is(CommentType.LIKE.getType());
+        Query queryDelete = Query.query(criteria);
+        mongoTemplate.remove(queryDelete, Comment.class);
+        //修改表
+        Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+        Update update = new Update();
+        update.inc("likeCount", -1);
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        options.returnNew(true);//获取更新后的最新数据
+        Comment modify = mongoTemplate.findAndModify(query, update, options, Comment.class);
+    }
+
+    /**
+     * 取消
+     *
+     * @param comment
+     */
+    @Override
+    public void DisVideo(Comment comment) {
+        mongoTemplate.remove(comment);
+        Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
+        Update update = new Update();
+        if (comment.getCommentType() == 2) {
+            update.inc("commentCount", -1);
+        } else if (comment.getCommentType() == 1) {
+            update.inc("likeCount", -1);
+        }
+        //设置更新参数
+        FindAndModifyOptions options = new FindAndModifyOptions();
+        //获取更新后的最新数据
+        options.returnNew(true);
+        mongoTemplate.findAndModify(query, update, options, Video.class);
     }
 }

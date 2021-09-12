@@ -51,7 +51,7 @@ public class TanhuaService {
     private String recommendUser;
 
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     private MessagesService messagesService;
@@ -149,7 +149,7 @@ public class TanhuaService {
             String hashKey = String.valueOf(visitors.getVisitorUserId());  //hash的小键     用户的id      被看人的id
             String value = String.valueOf(System.currentTimeMillis());   //被看的时间
             HashOperations<String, String, String> hash = redisTemplate.opsForHash();
-            redisTemplate.opsForHash().put(key, hashKey, value);
+            hash.put(key, hashKey, value);
         }
         //构造返回值
         return TodayBest.init(userInfo, user);
@@ -320,3 +320,4 @@ public class TanhuaService {
         return vos;
     }
 }
+

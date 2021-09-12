@@ -105,13 +105,11 @@ public class TanhuaController {
 
     /**
      * 搜附近
-     * <p>
      * /tanhua/search
      */
     @GetMapping("search")
     public ResponseEntity search(String gender,
                                  @RequestParam(defaultValue = "2000") String distance) {
-
         List<NearUserVo> vo = tanhuaService.search(gender, distance);
         return ResponseEntity.ok(vo);
     }

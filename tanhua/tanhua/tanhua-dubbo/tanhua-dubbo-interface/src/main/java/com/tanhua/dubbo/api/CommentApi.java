@@ -50,4 +50,29 @@ public interface CommentApi {
      * @return
      */
     List<Comment> findByUserId(CommentType like, Long userId, Integer page, Integer pagesize);
+
+    /**
+     * 视频评论
+     *
+     * @param comment
+     */
+    void saveVideo(Comment comment);
+
+    /**
+     * 评论点赞
+     */
+    void saveVideoComments(Comment comment);
+
+    /**
+     * 取消视频评论点赞
+     *
+     * @param comment
+     */
+    void deleteComments(Comment comment);
+
+    /**
+     * 取消
+     * @param comment
+     */
+    void DisVideo(Comment comment);
 }
