@@ -72,7 +72,16 @@ public interface CommentApi {
 
     /**
      * 取消
+     *
      * @param comment
      */
     void DisVideo(Comment comment);
+
+    /**
+     * 更根据id查询
+     *
+     * @param videoId
+     * @return
+     */
+    Comment find(String videoId);
 }

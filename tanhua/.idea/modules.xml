@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua.iml" filepath="$PROJECT_DIR$/tanhua/tanhua.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-admin/tanhua-admin.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-admin/tanhua-admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-app-server/tanhua-app-server.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-app-server/tanhua-app-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-autoconfig/tanhua-autoconfig.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-autoconfig/tanhua-autoconfig.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-commons/tanhua-commons.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-commons/tanhua-commons.iml" />
@@ -10,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-db/tanhua-dubbo-db.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-db/tanhua-dubbo-db.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-interface/tanhua-dubbo-interface.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-interface/tanhua-dubbo-interface.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-mongo/tanhua-dubbo-mongo.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-dubbo/tanhua-dubbo-mongo/tanhua-dubbo-mongo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-gateway/tanhua-gateway.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-gateway/tanhua-gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/tanhua/tanhua-model/tanhua-model.iml" filepath="$PROJECT_DIR$/tanhua/tanhua-model/tanhua-model.iml" />
     </modules>
   </component>

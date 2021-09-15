@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/smallVideos")
@@ -74,26 +75,31 @@ public class SmallVideoController {
      * 评论发布
      *
      * @param videoId 视频id
-     * @param comment 评论
+     * @param map     评论
      * @return
      */
     @PostMapping("{id}/comments")
-    public ResponseEntity comments(@PathVariable("id") String videoId, @RequestBody String comment) {
-        videosService.comments(videoId, comment);
+    public ResponseEntity comments(@PathVariable("id") String videoId, @RequestBody Map map) {
+        Object comment = map.get("comment");
+        String s = comment.toString();
+        videosService.comments(videoId, s);
         return ResponseEntity.ok(null);
     }
 
     /**
-     * 视频点赞
-     * /smallVideos/:id/like
+     * 评论列表
+     * /smallVideos/:id/comments
      *
      * @param videoId
      * @return
      */
-    @PostMapping("{id}/like")
-    public ResponseEntity like(@PathVariable("id") String videoId) {
-        videosService.like(videoId);
-        return ResponseEntity.ok(null);
+    @GetMapping("/{id}/comments")
+    public ResponseEntity comments(
+            @PathVariable("id") String videoId,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer pagesize) {
+        PageResult pr = videosService.commentsPr(videoId, page, pagesize);
+        return ResponseEntity.ok(pr);
     }
 
     /**
@@ -123,6 +129,19 @@ public class SmallVideoController {
     }
 
     /**
+     * 视频点赞
+     * /smallVideos/:id/like
+     *
+     * @param videoId
+     * @return
+     */
+    @PostMapping("{id}/like")
+    public ResponseEntity like(@PathVariable("id") String videoId) {
+        videosService.like(videoId);
+        return ResponseEntity.ok(null);
+    }
+
+    /**
      * 视频点赞  - 取消
      * /smallVideos/:id/dislike
      *
@@ -134,22 +153,4 @@ public class SmallVideoController {
         videosService.commentsDisLikeVideo(videoId);
         return ResponseEntity.ok(null);
     }
-
-    /**
-     * 评论列表
-     * /smallVideos/:id/comments
-     *
-     * @param videoId
-     * @return
-     */
-    @GetMapping("comments/{id}/comments")
-    public ResponseEntity comments(
-            @PathVariable("id") String videoId,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer pagesize) {
-        PageResult pr = videosService.commentsPr(videoId, page, pagesize);
-        return ResponseEntity.ok(pr);
-    }
-
-
 }

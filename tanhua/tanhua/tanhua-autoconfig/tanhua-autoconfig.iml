@@ -74,6 +74,7 @@
     <orderEntry type="library" name="Maven: com.baidu.aip:java-sdk:4.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20160810" level="project" />
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" name="Maven: com.aliyun:aliyun-java-sdk-green:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-web:2.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:2.3.9.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:2.3.9.RELEASE" level="project" />

@@ -3,6 +3,8 @@ package com.tanhua.commons.utils;
 //常量定义
 public class Constants {
 
+    //管理后台验证码redis的key
+    public static final String CAP_CODE = "CAP_CODE_";
 
     //手机APP短信验证码CHECK_CODE_
     public static final String SMS_CODE = "CHECK_CODE_";

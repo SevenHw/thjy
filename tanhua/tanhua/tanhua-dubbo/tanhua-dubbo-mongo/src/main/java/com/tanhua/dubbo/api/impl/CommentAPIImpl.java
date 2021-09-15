@@ -185,6 +185,15 @@ public class CommentAPIImpl implements CommentApi {
         return modify.statisCount();
     }
 
+    /**
+     * 查询点赞
+     *
+     * @param like
+     * @param userId
+     * @param page
+     * @param pagesize
+     * @return
+     */
     @Override
     public List<Comment> findByUserId(CommentType like, Long userId, Integer page, Integer pagesize) {
         //点赞
@@ -212,6 +221,11 @@ public class CommentAPIImpl implements CommentApi {
         }
     }
 
+    /**
+     * 视频评论
+     *
+     * @param comment
+     */
     @Override
     public void saveVideo(Comment comment) {
         mongoTemplate.save(comment);
@@ -229,6 +243,9 @@ public class CommentAPIImpl implements CommentApi {
         mongoTemplate.findAndModify(query, update, options, Video.class);
     }
 
+    /**
+     * 评论点赞
+     */
     @Override
     public void saveVideoComments(Comment comment) {
         mongoTemplate.save(comment);
@@ -242,6 +259,11 @@ public class CommentAPIImpl implements CommentApi {
         mongoTemplate.findAndModify(query, update, options, Comment.class);
     }
 
+    /**
+     * 取消视频评论点赞
+     *
+     * @param comment
+     */
     @Override
     public void deleteComments(Comment comment) {
         //删除点赞数据
@@ -267,7 +289,10 @@ public class CommentAPIImpl implements CommentApi {
      */
     @Override
     public void DisVideo(Comment comment) {
-        mongoTemplate.remove(comment);
+        Criteria criteria = Criteria.where("id").is(comment.getPublishId()).and("userId").is(comment.getUserId()).and("publishUserId").is(comment.getPublishUserId());
+        Query query1 = Query.query(criteria);
+        mongoTemplate.remove(query1, Comment.class);
+
         Query query = Query.query(Criteria.where("id").is(comment.getPublishId()));
         Update update = new Update();
         if (comment.getCommentType() == 2) {
@@ -280,5 +305,18 @@ public class CommentAPIImpl implements CommentApi {
         //获取更新后的最新数据
         options.returnNew(true);
         mongoTemplate.findAndModify(query, update, options, Video.class);
+    }
+
+    /**
+     * 更根据id查询
+     *
+     * @param videoId
+     * @return
+     */
+    @Override
+    public Comment find(String videoId) {
+        Criteria criteria = Criteria.where("id").is(new ObjectId(videoId));
+        Query query = Query.query(criteria);
+        return mongoTemplate.findOne(query, Comment.class);
     }
 }

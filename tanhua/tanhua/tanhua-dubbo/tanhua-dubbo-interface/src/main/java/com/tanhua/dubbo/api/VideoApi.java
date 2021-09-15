@@ -36,12 +36,14 @@ public interface VideoApi {
 
     /**
      * 添加关注
+     *
      * @param focusUser
      */
     void saveFollowUser(FocusUser focusUser);
 
     /**
      * 取消关注
+     *
      * @param userId
      * @param friendId
      * @return
@@ -50,6 +52,7 @@ public interface VideoApi {
 
     /**
      * 根据id删除
+     *
      * @param userId
      * @param friendId
      */
@@ -57,8 +60,19 @@ public interface VideoApi {
 
     /**
      * 根据id查询
+     *
      * @param videoId
      * @return
      */
     Video findById(String videoId);
+
+    /**
+     * 更具id查询个人所有视频
+     *
+     * @param page
+     * @param pagesize
+     * @param userId
+     * @return
+     */
+    PageResult findByUserIds(Integer page, Integer pagesize, Long userId);
 }

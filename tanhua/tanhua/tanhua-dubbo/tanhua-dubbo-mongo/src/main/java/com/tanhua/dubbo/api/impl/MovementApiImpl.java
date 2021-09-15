@@ -2,6 +2,7 @@ package com.tanhua.dubbo.api.impl;
 
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.utils.IdWorker;
 import com.tanhua.dubbo.utils.TimeLineService;
@@ -131,5 +132,21 @@ public class MovementApiImpl implements MovementApi {
         return mongoTemplate.findById(movementId, Movement.class);
     }
 
+    @Override
+    public PageResult findByUserId(Long userId, Integer state, Integer page, Integer pagesize) {
+        //创建分页查询条件
+        Query query = new Query().skip((page - 1) * pagesize).limit(pagesize)
+                .with(Sort.by(Sort.Order.desc("created")));
+        //当userId不等于null时
+        if (ObjectUtil.isEmpty(userId)) {
+            query.addCriteria(Criteria.where("userId").is(userId));
+        }
+        if (ObjectUtil.isEmpty(state)) {
+            query.addCriteria(Criteria.where("state").is(state));
+        }
+        List<Movement> list = mongoTemplate.find(query, Movement.class);
+        long count = mongoTemplate.count(query, Movement.class);
+        return new PageResult(page, pagesize, count, list);
+    }
 
 }

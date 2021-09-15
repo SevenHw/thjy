@@ -57,4 +57,15 @@ public interface MovementApi {
      * @return
      */
     Movement findById(String movementId);
+
+    /**
+     * 分页查询个人用户视频信息
+     *
+     * @param userId
+     * @param state
+     * @param page
+     * @param pagesize
+     * @return
+     */
+    PageResult findByUserId(Long userId, Integer state, Integer page, Integer pagesize);
 }

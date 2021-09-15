@@ -84,7 +84,10 @@ public class VideoApiImpl implements VideoApi {
      */
     @Override
     public void saveFollowUser(FocusUser focusUser) {
-        mongoTemplate.save(focusUser);
+        Boolean flag = this.findByUserIdBool(focusUser.getUserId(), focusUser.getFollowUserId());
+        if (!flag) {
+            mongoTemplate.save(focusUser);
+        }
     }
 
     /**
@@ -126,5 +129,23 @@ public class VideoApiImpl implements VideoApi {
         Criteria criteria = Criteria.where("id").is(videoId);
         Query query = Query.query(criteria);
         return mongoTemplate.findOne(query, Video.class);
+    }
+
+    /**
+     * 更具id查询个人所有视频
+     *
+     * @param page
+     * @param pagesize
+     * @param userId
+     * @return
+     */
+    @Override
+    public PageResult findByUserIds(Integer page, Integer pagesize, Long userId) {
+        Criteria criteria = Criteria.where("userId").is(userId);
+        long count = mongoTemplate.count(Query.query(criteria), Video.class);
+        Query query = Query.query(criteria).skip((page - 1) * pagesize).limit(pagesize)
+                .with(Sort.by(Sort.Order.desc("created")));
+        List<Video> list = mongoTemplate.find(query, Video.class);
+        return new PageResult(page, pagesize, count, list);
     }
 }

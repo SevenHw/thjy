@@ -24,7 +24,6 @@ import com.tanhua.server.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,9 +92,9 @@ public class SmallVideosService {
      * @param pagesize 页尺寸
      * @return
      */
-    @Cacheable(
+    /*@Cacheable(
             value = "videos",
-            key = "T(com.tanhua.server.interceptor.UserHolder).getUserId()+'_'+#page+'_'+#pagesize")
+            key = "T(com.tanhua.server.interceptor.UserHolder).getUserId()+'_'+#page+'_'+#pagesize")*/
     public PageResult findVideos(Integer page, Integer pagesize) {
         //查看redis中是否有推荐视频
         String value = redisTemplate.opsForValue().get(Constants.VIDEOS_RECOMMEND + UserHolder.getUserId());
@@ -119,6 +118,14 @@ public class SmallVideosService {
                     UserInfo userInfo = map.get(video.getUserId());
                     if (!ObjectUtil.isEmpty(userInfo)) {
                         VideoVo vo = VideoVo.init(userInfo, video);
+                        Object Vovalue = redisTemplate.opsForHash().get(Constants.FOCUS_USER_KEY + UserHolder.getUserId(), vo.getUserId());
+                        if (ObjectUtil.isEmpty(vo)) {
+                            vo.setHasFocus(0);
+                        } else {
+                            String s = Vovalue.toString();
+                            Integer index = Integer.valueOf(s);
+                            vo.setHasFocus(index);
+                        }
                         vos.add(vo);
                     }
                 }
@@ -142,6 +149,14 @@ public class SmallVideosService {
             UserInfo userInfo = map.get(video.getUserId());
             if (!ObjectUtil.isEmpty(userInfo)) {
                 VideoVo vo = VideoVo.init(userInfo, video);
+                Object Vovalue = redisTemplate.opsForHash().get(Constants.FOCUS_USER_KEY + UserHolder.getUserId(), vo.getUserId().toString());
+                if (ObjectUtil.isEmpty(Vovalue)) {
+                    vo.setHasFocus(0);
+                } else {
+                    String s = Vovalue.toString();
+                    Integer index = Integer.valueOf(s);
+                    vo.setHasFocus(index);
+                }
                 vos.add(vo);
             }
         }
@@ -155,6 +170,7 @@ public class SmallVideosService {
      * @param friendId
      */
     public void userFocus(Long friendId) {
+
         //1、创建FollowUser对象，并设置属性
         FocusUser focusUser = new FocusUser();
         focusUser.setUserId(UserHolder.getUserId());
@@ -205,6 +221,7 @@ public class SmallVideosService {
         //获得发布人的id
         Video video = videoApi.findById(videoId);
         Long videoUserId = video.getUserId();
+        //封装数据
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(videoId));
         comment.setCommentType(CommentType.COMMENT.getType());
@@ -212,7 +229,38 @@ public class SmallVideosService {
         comment.setUserId(UserHolder.getUserId());
         comment.setPublishUserId(videoUserId);
         comment.setCreated(System.currentTimeMillis());
+        //调用api 添加数据
         commentApi.saveVideo(comment);
+    }
+
+    /**
+     * 评论列表
+     * /smallVideos/:id/comments
+     *
+     * @param videoId
+     * @return
+     */
+    public PageResult commentsPr(String videoId, Integer page, Integer pagesize) {
+        //获得评论数据
+        List<Comment> comments = commentApi.findComments(videoId, CommentType.COMMENT, page, pagesize);
+        //判断评论是否存在
+        if (ObjectUtil.isEmpty(comments)) {
+            return new PageResult();
+        }
+        //获得发布评论的id
+        List<Long> publishUserIds = CollUtil.getFieldValues(comments, "publishUserId", Long.class);
+        //调用api获得发布评论人的信息
+        Map<Long, UserInfo> map = userInfoApi.findByIds(publishUserIds, null);
+        List<CommentVo> vos = new ArrayList<>();
+        for (Comment comment : comments) {
+            UserInfo userInfo = map.get(comment.getPublishUserId());
+            if (!ObjectUtil.isEmpty(userInfo)) {
+                //获得vo对象
+                CommentVo vo = CommentVo.init(userInfo, comment);
+                vos.add(vo);
+            }
+        }
+        return new PageResult(page, pagesize, 0L, vos);
     }
 
     /**
@@ -221,32 +269,18 @@ public class SmallVideosService {
      * @param videoId
      */
     public void commentsLike(String videoId) {
-        Video video = videoApi.findById(videoId);
+        //获得发布人的id
+        Comment video = commentApi.find(videoId);
         Long videoUserId = video.getUserId();
+        //封装数据
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(videoId));
         comment.setCommentType(CommentType.LIKE.getType());
         comment.setUserId(UserHolder.getUserId());
         comment.setPublishUserId(videoUserId);
         comment.setCreated(System.currentTimeMillis());
+        //调用api添加
         commentApi.saveVideoComments(comment);
-    }
-
-    /**
-     * 视频点赞
-     *
-     * @param videoId
-     */
-    public void like(String videoId) {
-        Video video = videoApi.findById(videoId);
-        Long videoUserId = video.getUserId();
-        Comment comment = new Comment();
-        comment.setPublishId(new ObjectId(videoId));
-        comment.setCommentType(CommentType.LIKE.getType());
-        comment.setUserId(UserHolder.getUserId());
-        comment.setPublishUserId(videoUserId);
-        comment.setCreated(System.currentTimeMillis());
-        commentApi.saveVideo(comment);
     }
 
     /**
@@ -260,12 +294,37 @@ public class SmallVideosService {
         if (!flag) {
             throw new BusinessException(ErrorResult.error());
         }
+        //封装数据
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(videoId));
         comment.setCommentType(CommentType.LIKE.getType());
         comment.setUserId(UserHolder.getUserId());
         comment.setCreated(System.currentTimeMillis());
+        //调用api删除
         commentApi.deleteComments(comment);
+    }
+
+    /**
+     * 视频点赞
+     *
+     * @param videoId
+     */
+    public void like(String videoId) {
+        //获得发布人的id
+        Video video = videoApi.findById(videoId);
+        Long videoUserId = video.getUserId();
+        Comment comment = new Comment();
+        //封装 数据
+        comment.setPublishId(new ObjectId(videoId));
+        comment.setCommentType(CommentType.LIKE.getType());
+        comment.setUserId(UserHolder.getUserId());
+        comment.setPublishUserId(videoUserId);
+        comment.setCreated(System.currentTimeMillis());
+        //调用api添加数据
+        commentApi.saveVideo(comment);
+        //将数据存进redis
+        redisTemplate.opsForHash().put(Constants.VIDEO_LIKE_HASHKEY + UserHolder.getUserId(), video.getUserId().toString(), "1");
+
     }
 
     /**
@@ -281,36 +340,20 @@ public class SmallVideosService {
         if (!flag) {
             throw new BusinessException(ErrorResult.error());
         }
+        //获得发布人的id
+        Video video = videoApi.findById(videoId);
+        Long userId = video.getUserId();
+        //封装数据
         Comment comment = new Comment();
         comment.setPublishId(new ObjectId(videoId));
         comment.setCommentType(CommentType.LIKE.getType());
         comment.setUserId(UserHolder.getUserId());
         comment.setCreated(System.currentTimeMillis());
+        comment.setPublishUserId(userId);
+        //调用api删除
         commentApi.DisVideo(comment);
+        //删除redis中的数据
+        redisTemplate.opsForHash().delete(Constants.VIDEO_LIKE_HASHKEY + UserHolder.getUserId(), video.getUserId().toString());
     }
 
-    /**
-     * 评论列表
-     * /smallVideos/:id/comments
-     *
-     * @param videoId
-     * @return
-     */
-    public PageResult commentsPr(String videoId, Integer page, Integer pagesize) {
-        List<Comment> comments = commentApi.findComments(videoId, CommentType.COMMENT, page, pagesize);
-        if (ObjectUtil.isEmpty(comments)) {
-            return new PageResult();
-        }
-        List<Long> publishUserIds = CollUtil.getFieldValues(comments, "publishUserId", Long.class);
-        Map<Long, UserInfo> map = userInfoApi.findByIds(publishUserIds, null);
-        List<CommentVo> vos = new ArrayList<>();
-        for (Comment comment : comments) {
-            UserInfo userInfo = map.get(comment.getPublishUserId());
-            if (!ObjectUtil.isEmpty(userInfo)) {
-                CommentVo vo = CommentVo.init(userInfo, comment);
-                vos.add(vo);
-            }
-        }
-        return new PageResult(page, pagesize, 0L, vos);
-    }
 }
