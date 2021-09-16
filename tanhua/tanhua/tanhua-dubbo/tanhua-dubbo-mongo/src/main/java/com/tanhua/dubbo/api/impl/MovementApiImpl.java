@@ -6,6 +6,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.utils.IdWorker;
 import com.tanhua.dubbo.utils.TimeLineService;
+import com.tanhua.model.enums.CommentType;
+import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Movement;
 import com.tanhua.model.mongo.MovementTimeLine;
 import com.tanhua.model.vo.PageResult;
@@ -138,10 +140,10 @@ public class MovementApiImpl implements MovementApi {
         Query query = new Query().skip((page - 1) * pagesize).limit(pagesize)
                 .with(Sort.by(Sort.Order.desc("created")));
         //当userId不等于null时
-        if (ObjectUtil.isEmpty(userId)) {
+        if (!ObjectUtil.isEmpty(userId)) {
             query.addCriteria(Criteria.where("userId").is(userId));
         }
-        if (ObjectUtil.isEmpty(state)) {
+        if (!ObjectUtil.isEmpty(state)) {
             query.addCriteria(Criteria.where("state").is(state));
         }
         List<Movement> list = mongoTemplate.find(query, Movement.class);
@@ -149,4 +151,27 @@ public class MovementApiImpl implements MovementApi {
         return new PageResult(page, pagesize, count, list);
     }
 
+    /**
+     * 评论列表翻页
+     * /manage/messages/comments
+     *
+     * @param page
+     * @param pagesize
+     * @param sortProp  排序字段
+     * @param sortOrder 升序降序
+     * @param publishId 动态id
+     * @return
+     */
+    @Override
+    public List<Comment> findByPublidshId(Integer page, Integer pagesize, String sortProp, String sortOrder, String publishId) {
+        Criteria criteria = Criteria.where("publishId").is(new ObjectId(publishId))
+                .and("commentType").is(CommentType.COMMENT.getType());
+        Query query = Query.query(criteria).skip((page - 1) * pagesize).limit(pagesize);
+        if (sortOrder.equals("ascending ")) {
+            query.with(Sort.by(Sort.Order.asc(sortProp)));
+        } else {
+            query.with(Sort.by(Sort.Order.desc(sortProp)));
+        }
+        return mongoTemplate.find(query, Comment.class);
+    }
 }

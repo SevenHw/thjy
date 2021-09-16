@@ -1,6 +1,7 @@
 package com.tanhua.dubbo.api;
 
 
+import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Movement;
 import com.tanhua.model.vo.PageResult;
 
@@ -68,4 +69,17 @@ public interface MovementApi {
      * @return
      */
     PageResult findByUserId(Long userId, Integer state, Integer page, Integer pagesize);
+
+    /**
+     * 评论列表翻页
+     * /manage/messages/comments
+     *
+     * @param page
+     * @param pagesize
+     * @param sortProp  排序字段
+     * @param sortOrder 升序降序
+     * @param publishId 动态id
+     * @return
+     */
+    List<Comment> findByPublidshId(Integer page, Integer pagesize, String sortProp, String sortOrder, String publishId);
 }

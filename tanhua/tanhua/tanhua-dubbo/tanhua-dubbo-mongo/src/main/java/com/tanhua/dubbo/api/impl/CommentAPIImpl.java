@@ -64,7 +64,7 @@ public class CommentAPIImpl implements CommentApi {
             return modify.statisCount(comment.getCommentType());
         } else {
             //查询评论发布人id
-            Comment commentById = mongoTemplate.findById(comment.getPublishId(), Comment.class);
+            Movement commentById = mongoTemplate.findById(comment.getPublishId(), Movement.class);
             //评论发布人的id
             Long userId = commentById.getUserId();
             comment.setPublishUserId(userId);
@@ -78,9 +78,9 @@ public class CommentAPIImpl implements CommentApi {
             FindAndModifyOptions options = new FindAndModifyOptions();
             //获取更新后的最新数据
             options.returnNew(true);
-            Comment modify = mongoTemplate.findAndModify(query, update, options, Comment.class);
+            Movement modify = mongoTemplate.findAndModify(query, update, options, Movement.class);
             //5、获取最新的评论数量，并返回
-            return modify.statisCount();
+            return modify.statisCount(CommentType.COMMENT.getType());
         }
 
     }

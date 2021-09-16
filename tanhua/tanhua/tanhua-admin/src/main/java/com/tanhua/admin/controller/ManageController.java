@@ -2,6 +2,7 @@ package com.tanhua.admin.controller;
 
 import com.tanhua.admin.service.ManageService;
 import com.tanhua.model.domian.UserInfo;
+import com.tanhua.model.vo.MovementsVo;
 import com.tanhua.model.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -77,4 +78,39 @@ public class ManageController {
         PageResult pr = manageService.messages(page, pagesize, uid, state);
         return ResponseEntity.ok(pr);
     }
+
+    /**
+     * 动态详情
+     * /manage/messages/:id
+     *
+     * @param movementsId 动态id
+     * @return
+     */
+    @GetMapping("messages/{id}")
+    public ResponseEntity messages(@PathVariable("id") String movementsId) {
+        MovementsVo pr = manageService.messagesUserId(movementsId);
+        return ResponseEntity.ok(pr);
+    }
+
+    /**
+     * 评论列表翻页
+     * /manage/messages/comments
+     *
+     * @param page
+     * @param pagesize
+     * @param sortProp  排序字段
+     * @param sortOrder 升序降序
+     * @param messageID 动态id
+     * @return
+     */
+    @GetMapping("messages/comments")
+    public ResponseEntity comments(@RequestParam(defaultValue = "1") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer pagesize,
+                                   String sortProp,
+                                   String sortOrder,
+                                   String messageID) {
+        PageResult pr = manageService.comments(page, pagesize, sortProp, sortOrder, messageID);
+        return ResponseEntity.ok(pr);
+    }
+
 }

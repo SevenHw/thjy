@@ -1,12 +1,15 @@
 package com.tanhua.admin.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.tanhua.dubbo.api.MovementApi;
 import com.tanhua.dubbo.api.UserInfoApi;
 import com.tanhua.dubbo.api.VideoApi;
 import com.tanhua.model.domian.UserInfo;
+import com.tanhua.model.mongo.Comment;
 import com.tanhua.model.mongo.Movement;
+import com.tanhua.model.vo.CommentsVo;
 import com.tanhua.model.vo.MovementsVo;
 import com.tanhua.model.vo.PageResult;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -95,5 +98,55 @@ public class ManageService {
         //4、构造返回值
         result.setItems(vos);
         return result;
+    }
+
+    /**
+     * 动态详情
+     *
+     * @param movementsId
+     * @return
+     */
+    public MovementsVo messagesUserId(String movementsId) {
+        //更具动态地查询出动态信息
+        Movement movement = movementApi.findById(movementsId);
+        //查询用户信息
+        UserInfo userInfo = userInfoApi.findById(movement.getUserId());
+        //构造返回值
+        return MovementsVo.init(userInfo, movement);
+    }
+
+    /**
+     * 评论列表翻页
+     * /manage/messages/comments
+     *
+     * @param page
+     * @param pagesize
+     * @param sortProp  排序字段
+     * @param sortOrder 升序降序
+     * @param publishId 动态id
+     * @return
+     */
+    public PageResult comments(Integer page, Integer pagesize, String sortProp, String sortOrder, String publishId) {
+        //更具动态地查询出动态信息
+        Movement movement = movementApi.findById(publishId);
+        //更具动态地查询出评论信息
+        List<Comment> list = movementApi.findByPublidshId(page, pagesize, sortProp, sortOrder, publishId);
+        //判断是否为空
+        if (ObjectUtil.isEmpty(list)) {
+            return new PageResult();
+        }
+        //获得返回对象的id
+        List<Long> userIdS = CollUtil.getFieldValues(list, "userId", Long.class);
+        //查询这些用户的个人信息
+        Map<Long, UserInfo> map = userInfoApi.findByIds(userIdS, null);
+        List<CommentsVo> vos = new ArrayList<>();
+        for (Comment comment : list) {
+            UserInfo userInfo = map.get(comment.getUserId());
+            if (!ObjectUtil.isEmpty(userInfo)) {
+                CommentsVo vo = CommentsVo.init(userInfo, comment);
+                vos.add(vo);
+            }
+        }
+        return new PageResult(page, pagesize, Long.valueOf(vos.size()), vos);
     }
 }
